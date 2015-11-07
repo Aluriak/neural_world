@@ -28,10 +28,10 @@ class Individual:
         self.neuron_types = tuple(neuron_types)
         self.edges = tuple(edges)
         # Construction of the neural network
-        self.network_atoms = Individual.build_network_atoms(self)
-        assert self.network_atoms.count('neuron') == self.nb_neuron
+        self.network_atoms_all = Individual.build_network_atoms(self)
+        assert self.network_atoms_all.count('neuron') == self.nb_neuron
         # Cleaning, for remove useless data
-        self.network_atoms = neural_network.clean(self.network_atoms)
+        self.network_atoms = neural_network.clean(self.network_atoms_all)
         assert self.network_atoms[-1] == '.'
         # Life support
         self.energy = energy
