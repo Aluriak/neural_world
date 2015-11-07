@@ -16,6 +16,5 @@ class Engine:
     def invoke_all(self):
         [c.execute(self.world) for c in self.commands]
         self.commands = []
-        self.world.notify()
 
 
