@@ -69,3 +69,5 @@ if __name__ == '__main__':
             w.step_number = 0
     except KeyboardInterrupt:
         LOGGER.info('Treatment loop finished through keyboard interruption.')
+    w.deinit()
+    LOGGER.info('Deinitialization of World')
