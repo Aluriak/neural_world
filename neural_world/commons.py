@@ -28,6 +28,7 @@ MAIN_LOGGER = logging.getLogger(LOGGER_NAME)
 SUBLOGGER_SOLVING = 'solving'
 SUBLOGGER_LIFE    = 'life'
 SUBLOGGER_SEPARATOR = '_'  # '.' for allowing inheritance
+LOGFILE_MAX_SIZE  = 2**20
 # ASP SOLVING OPTIONS
 ASP_GRINGO_OPTIONS = ''  # no default options
 ASP_CLASP_OPTIONS  = ''  # options of solving heuristics
@@ -157,7 +158,7 @@ logging.config.dictConfig({
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': DIR_LOGS + LOGGER_NAME + '.log',
             'mode': 'w',
-            'maxBytes': 2**24,
+            'maxBytes': LOGFILE_MAX_SIZE,
             'formatter': 'verbose',
         },
         'logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_SOLVING: {
@@ -165,7 +166,7 @@ logging.config.dictConfig({
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': DIR_LOGS + LOGGER_NAME + '.' + SUBLOGGER_SOLVING + '.log',
             'mode': 'w',
-            'maxBytes': 2**24,
+            'maxBytes': LOGFILE_MAX_SIZE,
             'formatter': 'verbose',
         },
         'logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_LIFE: {
@@ -173,7 +174,7 @@ logging.config.dictConfig({
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': DIR_LOGS + LOGGER_NAME + '.' + SUBLOGGER_LIFE + '.log',
             'mode': 'w',
-            'maxBytes': 2**24,
+            'maxBytes': LOGFILE_MAX_SIZE,
             'formatter': 'verbose',
         },
     },
