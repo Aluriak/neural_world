@@ -82,3 +82,4 @@ class NextStepAction(Action):
     def execute(self, world):
         for coords, obj in world:
             obj.update(self.engine, world.neighbors(coords), coords)
+        world.regenerate_nutrient()
