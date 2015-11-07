@@ -47,6 +47,9 @@ class Individual:
             )
             directions = neural_network.react(self, states)
             engine.add(MoveAction(self, coords, directions))
+            # spawn another unit if possible
+            if self.energy >= config.LIFE_DIVISION_MIN_ENERGY:
+                engine.add(ReplicateAction(self, coords))
         else:
             engine.add(RemoveAction(self, coords))
 
@@ -66,14 +69,14 @@ class Individual:
         if energy is None:
             energy = self.energy // 2
             self.energy = int(self.energy / 2 + 0.5)
-        # apply the mutator if available
+        # apply the mutator if available, and create the Individual
         if mutator:
             nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
                 nb_intermediate_neuron, neuron_types, edges
             )
         return Individual(
-            nb_intermediate_neuron=nb_neuron,
-            neuron_types=types,
+            nb_intermediate_neuron=nb_intermediate_neuron,
+            neuron_types=neuron_types,
             edges=edges,
             energy=energy,
         )
