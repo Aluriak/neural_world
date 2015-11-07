@@ -49,7 +49,9 @@ if __name__ == '__main__':
     # Engine and View
     e = Engine(w)
     v = TerminalWorldView(e)
-    w.register(v)
+    a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()))
+    t = TreeBuilder(a.archive_directory)
+    [w.register(_) for _ in (v, a, t)]
 
     # Initialize the world
     w.populate()
