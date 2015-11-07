@@ -83,3 +83,4 @@ class NextStepAction(Action):
         for coords, obj in world:
             obj.update(self.engine, world.neighbors(coords), coords)
         world.regenerate_nutrient()
+        world.step_number += 1

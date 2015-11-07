@@ -62,6 +62,7 @@ if __name__ == '__main__':
             for _ in range(4):
                 e.add(AddAction(i.spawn()))
             e.invoke_all()
+            w.step_number = 0
     except KeyboardInterrupt:
         LOGGER.info('Treatment loop finished through keyboard interruption.')
 

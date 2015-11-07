@@ -32,6 +32,7 @@ class World:
         self.incubator          = incubator
         self.nutrient_regen     = nutrient_regen
         self.object_counter     = defaultdict(int)
+        self.step_number        = 0
 
         # Populate the world
         for coords, square in self.ordered_objects:
