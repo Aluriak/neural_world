@@ -63,19 +63,30 @@ class World(observer.Observable):
                 self.spawn(self.random_coords())
 
 
+    def remove(self, obj, place):
+        """Remove an object from space at given coords/square, and return it.
 
+        obj: an individual or a nutrient.
+        place: coords (2-tuple) or square (set) from obj will be removed.
 
-
-    def remove(self, obj, coords):
-        """Remove an object from space at given coords, and return it"""
-        square = self.space[coords]
+        """
+        if isinstance(place, set): square = place
+        else:                      square = self.space[place]
         square.remove(obj)
         self.object_counter[obj.__class__] -= 1
         return obj
 
-    def add(self, obj, coords):
-        """Place given obj at given coords, and return it"""
-        self.space[coords].add(obj)
+    def add(self, obj, place):
+        """Place given obj at given coords or square, and return it.
+
+        obj: an individual or a nutrient.
+        place: coords (2-tuple) or square (set) where the obj will be placed.
+
+        """
+        if isinstance(place, set):  # its a square !
+            place.add(obj)
+        else:  # its coords !
+            self.space[place].add(obj)
         self.object_counter[obj.__class__] += 1
         return obj
 
