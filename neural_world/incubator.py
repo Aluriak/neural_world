@@ -18,7 +18,7 @@ class Incubator:
         self.mutator = mutator
 
     def spawn(self):
-        nb_neuron = randint(2, 10)
+        nb_neuron = randint(2, 20)
         total_nb_neuron = sum((
             nb_neuron,
             config.INPUT_NEURON_COUNT,
