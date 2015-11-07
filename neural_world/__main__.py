@@ -19,8 +19,8 @@ from neural_world.world import World
 from neural_world.engine import Engine
 from neural_world.mutator import Mutator
 from neural_world.actions import NextStepAction, AddAction
+from neural_world.observer import Archivist, TerminalWorldView, TreeBuilder
 from neural_world.incubator import Incubator
-from neural_world.world_view import TerminalWorldView
 
 
 LOGGER = commons.logger()

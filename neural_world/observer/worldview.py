@@ -3,9 +3,9 @@ Basical implementation of a terminal view for World object.
 
 """
 import neural_world.commons as commons
-import neural_world.observer as observer
 from neural_world.individual import Individual
 from neural_world.nutrient import Nutrient
+from . import observer
 
 
 LOGGER = commons.logger()
@@ -22,7 +22,7 @@ class TerminalWorldView(observer.Observer):
 
     def update(self, world, signals={}):
         """Print World in the terminal"""
-        if len(signals) == 0 or observer.signal.NEW_STEP in signals:
+        if len(signals) == 0 or observer.Signal.NEW_STEP in signals:
             print('\nstep:', world.step_number,
                   '\tindividuals:', world.object_counter[Individual])
             x_prev, line = 0, ''
