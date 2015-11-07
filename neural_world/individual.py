@@ -25,8 +25,8 @@ class Individual:
             config.INPUT_NEURON_COUNT, config.OUTPUT_NEURON_COUNT,
             nb_intermediate_neuron
         ))
-        self.neuron_types = neuron_types
-        self.edges = edges
+        self.neuron_types = tuple(neuron_types)
+        self.edges = tuple(edges)
         # Construction of the neural network
         self.network_atoms = Individual.build_network_atoms(self)
         assert self.network_atoms.count('neuron') == self.nb_neuron
@@ -49,6 +49,35 @@ class Individual:
             engine.add(MoveAction(self, coords, directions))
         else:
             engine.add(RemoveAction(self, coords))
+
+
+    def clonage(self, mutator=None, energy=None):
+        """Return a new Individuals, created with the same data,
+        modified by the mutator if provided.
+
+        If energy is None, half of the energy keeped by self will be given
+        to the new clone.
+
+        """
+        # copy the data
+        nb_intermediate_neuron = self.nb_intermediate_neuron
+        neuron_types = tuple(self.neuron_types)
+        edges = tuple(self.edges)
+        if energy is None:
+            energy = self.energy // 2
+            self.energy = int(self.energy / 2 + 0.5)
+        # apply the mutator if available
+        if mutator:
+            nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
+                nb_intermediate_neuron, neuron_types, edges
+            )
+        return Individual(
+            nb_intermediate_neuron=nb_neuron,
+            neuron_types=types,
+            edges=edges,
+            energy=energy,
+        )
+
 
     @staticmethod
     def build_network_atoms(individual):
@@ -83,3 +112,6 @@ class Individual:
 
     @property
     def max_neuron_id(self): return self.nb_neuron
+
+    def __str__(self):
+        return str(self.ID) + ': I-Neurons: ' + str(self.nb_intermediate_neuron)
