@@ -24,6 +24,7 @@ from neural_world.incubator import Incubator
 
 
 LOGGER = commons.logger()
+INITIAL_LIFE_COUNT = 4
 
 
 if __name__ == '__main__':
@@ -42,7 +43,7 @@ if __name__ == '__main__':
         incubator=i,
         nutrient_density=0.8,
         nutrient_regen=0.005,
-        indiv_count=4,
+        indiv_count=INITIAL_LIFE_COUNT,
     )
 
     # Engine and View
@@ -57,12 +58,12 @@ if __name__ == '__main__':
         w.notify_observers()
         while True:
             while w.have_life:
-                time.sleep(0.5)
+                time.sleep(0.1)
                 e.add(NextStepAction(e))
                 e.invoke_all()
             # try again, life !
             v.update(w)
-            for _ in range(4):
+            for _ in range(INITIAL_LIFE_COUNT):
                 e.add(AddAction(i.spawn()))
             e.invoke_all()
             w.step_number = 0
