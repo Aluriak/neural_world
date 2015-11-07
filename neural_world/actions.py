@@ -24,28 +24,31 @@ class Action:
 
 class MoveAction(Action):
 
-    def __init__(self, individual, coords, directions):
-        self.individual = individual
-        self.coords     = coords
+    def __init__(self, obj, coords, directions):
+        self.obj = obj
+        self.coords = coords
         self.directions = directions
 
     def execute(self, world):
-        world.remove(self.individual, self.coords)
-        final = Direction.final_coords(self.coords, self.directions)
-        LOGGER.debug('MOVE: ' + str(self.coords) + ' -> '
-                     + str(self.directions) + ' -> ' + str(final))
-        world.add(self.individual,
-                  Direction.final_coords(self.coords, self.directions))
+        world.remove(self.obj, self.coords)
+        final_coords = Direction.final_coords(self.coords, self.directions)
+        world.add(self.obj, final_coords)
+        # pick nutrients if possible
+        if self.obj.is_individual:
+            self.obj.energy += world.consume_nutrient(final_coords)
+            LOGGER.debug('CONSUME NUTRIENTS: ' + str(self.obj))
+        LOGGER.debug('MOVE: ' + str(self.obj) + ': ' + str(self.coords) + ' -> '
+                     + str(self.directions) + ' -> ' + str(final_coords))
 
 
 class RemoveAction(Action):
 
-    def __init__(self, individual, coords):
-        self.individual = individual
-        self.coords     = coords
+    def __init__(self, obj, coords):
+        self.obj = obj
+        self.coords = coords
 
     def execute(self, world):
-        world.remove(self.individual, self.coords)
+        world.remove(self.obj, self.coords)
 
 
 class AddAction(Action):
@@ -55,7 +58,7 @@ class AddAction(Action):
         self.coords = coords
 
     def execute(self, world):
-        world.add(self.individual, self.coords)
+        world.add(self.obj, self.coords)
 
 
 class NextStepAction(Action):

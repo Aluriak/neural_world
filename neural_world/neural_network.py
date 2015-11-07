@@ -75,10 +75,7 @@ def clean(network_atoms):
     return: a new string describing neural network through ASP atoms, cleaned.
 
     """
-    model = model_from(network_atoms, commons.ASP_CLEANING)
-    LOGGER.warning('DEBUG commons.clean(1): ' + str(model.__class__) + str(model))
-    LOGGER.warning('TODO commons.clean(1): test this function is necessary.')
-    return '.'.join(model)
+    return '.'.join(model_from(network_atoms, commons.ASP_CLEANING))
 
 
 def model_from(base_atoms, aspfiles, aspargs={},
