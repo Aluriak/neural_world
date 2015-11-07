@@ -62,12 +62,15 @@ class RemoveAction(Action):
 
 class AddAction(Action):
 
-    def __init__(self, obj, coords):
+    def __init__(self, obj, coords=None):
         self.obj = obj
         self.coords = coords
 
     def execute(self, world):
-        world.add(self.obj, self.coords)
+        if self.coords is None:
+            world.add(self.obj, world.random_coords())
+        else:
+            world.add(self.obj, self.coords)
 
 
 class NextStepAction(Action):
