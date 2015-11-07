@@ -54,7 +54,7 @@ if __name__ == '__main__':
     w.populate()
 
     try:
-        w.notify()
+        w.notify_observers()
         while True:
             while w.have_life:
                 time.sleep(0.5)
