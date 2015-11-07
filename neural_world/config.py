@@ -13,6 +13,10 @@ INPUT_NEURON_COUNT  = 16
 INPUT_NEURON_TYPE   = NeuronType.INPUT
 OUTPUT_NEURON_COUNT = len(Direction)
 OUTPUT_NEURON_TYPE  = NeuronType.OR
+LIFE_DIVISION_MIN_ENERGY = 20
+
+# Nutrient constants
+NUTRIENT_DEFAULT_ENERGY = 4
 
 # World space constants and refs
 NEIGHBOR_ACCESS = moore
