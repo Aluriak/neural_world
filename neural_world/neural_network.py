@@ -13,7 +13,7 @@ import neural_world.commons as commons
 from neural_world.commons import Direction
 
 
-LOGGER = commons.logger()
+LOGGER = commons.logger('solving')
 
 
 def square_to_input_neurons(square):
@@ -106,11 +106,8 @@ def model_from(base_atoms, aspfiles, aspargs={},
     #  create solver and ground base and program in a single ground call.
     solver = asp.Gringo4Clasp(gringo_options=gringo_options,
                               clasp_options=clasp_options)
-    # print('SOLVING:', aspfiles, constants)
-    # print('INPUT:', base_atoms.__class__, base_atoms)
+    LOGGER.info('SOLVING: ' + str(aspfiles) + ' constants: ' + str(constants))
     answers = solver.run(aspfiles, additionalProgramText=base_atoms)
-    # print('OK !')
-    # print(len(answers), 'ANSWER(S):', '\n'.join(str(_) for _ in answers))
 
     # return the last solution (which is the best), or None if no solution
     try:
