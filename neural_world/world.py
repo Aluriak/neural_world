@@ -90,6 +90,18 @@ class World(observer.Observable):
         self.object_counter[obj.__class__] += 1
         return obj
 
+    def spawn(self, place=None):
+        """Create and place a new indiv, created from incubator."""
+        # Use random coords if no coords given
+        if place is None:
+            place = self.random_coords()
+        # Create the new indiv and add it to space
+        new = self.incubator.spawn()
+        self.add(new, place)
+        # Logs it and send signal to observers
+        LOGGER.info('NEW INDIVIDUAL: ' + str(new) + '.')
+        self.notify_observers({observer.signal.NEW_INDIVIDUAL: new})
+
     def spawn_from(self, indiv, coords):
         """Create and place a new indiv, created from given one."""
         new = self.incubator.clone(indiv)
