@@ -18,6 +18,7 @@ from neural_world.info import PACKAGE_NAME
 DIR_PACKAGE  = PACKAGE_NAME + '/'
 DIR_LOGS     = DIR_PACKAGE + 'logs/'
 DIR_ASP      = DIR_PACKAGE + 'asp/'
+DIR_ARCHIVES = DIR_PACKAGE + 'archives/'
 ASP_SOLVING  = DIR_ASP + 'neural_solving.lp'
 ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
 # LOGGER CONSTANTS
