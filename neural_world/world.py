@@ -60,6 +60,21 @@ class World:
             if random() < self.nutrient_regen:
                 square.add(Nutrient())
 
+    def consume_nutrient(self, coords):
+        """Remove a Nutrient instance from coords and return
+        the associated amount of energy."""
+        square = self.space[coords]
+        nutrient = None
+        for obj in square:
+            if obj.is_nutrient:
+                nutrient = obj
+                break
+        if nutrient:
+            self.remove(nutrient, coords)
+            return nutrient.energy
+        else:
+            return 0
+
     def __iter__(self):
         return (
             (coords, obj)
