@@ -11,6 +11,17 @@ from neural_world.atoms import split as atoms_split
 from neural_world.commons import NeuronType
 
 
+def graphdict_to_dot(graph_dict):
+    """Return the DOT equivalent to the graph describes in given dict"""
+    graph = Digraph()
+    for pred, nexts in graph_dict.items():
+        pred = str(pred)
+        graph.node(pred)
+        for succ in (str(_) for _ in nexts):
+            graph.node(succ)
+            graph.edge(pred, succ)
+    return graph.source
+
 def network_atoms_to_dot(network_atoms):
     """Return the DOT formatted string equivalent of given neural network"""
     return network_atoms_to_graphviz(network_atoms).source
