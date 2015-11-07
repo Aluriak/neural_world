@@ -100,14 +100,14 @@ class World(observer.Observable):
         self.add(new, place)
         # Logs it and send signal to observers
         LOGGER.info('NEW INDIVIDUAL: ' + str(new) + '.')
-        self.notify_observers({observer.signal.NEW_INDIVIDUAL: new})
+        self.notify_observers({observer.Signal.NEW_INDIVIDUAL: (new, None)})
 
     def spawn_from(self, indiv, coords):
         """Create and place a new indiv, created from given one."""
         new = self.incubator.clone(indiv)
         self.add(new, coords)
         LOGGER.info('REPLICATE: ' + str(indiv) + ' gives ' + str(new) + '.')
-        self.notify_observers({observer.signal.NEW_INDIVIDUAL: new})
+        self.notify_observers({observer.Signal.NEW_INDIVIDUAL: (new, indiv)})
 
     def regenerate_nutrient(self):
         """Place randomly nutrient in the world"""
@@ -163,3 +163,6 @@ class World(observer.Observable):
             self.space[neighbor]
             for neighbor in config.NEIGHBOR_ACCESS(coords)
         )
+
+    def deinit(self):
+        self.deinit_observers()
