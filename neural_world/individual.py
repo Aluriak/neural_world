@@ -8,8 +8,11 @@ import neural_world.config as config
 import neural_world.commons as commons
 from neural_world.commons import Direction
 from neural_world.commons import NeuronType
-from neural_world.actions import MoveAction, RemoveAction
+from neural_world.actions import MoveAction, RemoveAction, ReplicateAction
 from neural_world import neural_network
+
+
+LOGGER = commons.logger('life')
 
 
 class Individual:
