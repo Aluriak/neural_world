@@ -25,8 +25,8 @@ oedge(Y,X):- edge(X,Y) ; X>Y.
 neuron(X):- neuron(X,_).
 
 % A neuron is connected to an output neuron if an oriented path exist between them.
-connected(X,Y):- neuron(X) ; output(Y) ; edge(X,Y).
-connected(X,Y):- neuron(X) ; output(Y) ; edge(X,Z) ; connected(Z,Y).
+connected(X,Y):- neuron(X) ; output(Y) ; oedge(X,Y).
+connected(X,Y):- neuron(X) ; output(Y) ; oedge(X,Z) ; connected(Z,Y).
 
 % A neuron is connected if connected to any output neuron, or if is itself an output neuron.
 connected(X):- connected(X,_).
