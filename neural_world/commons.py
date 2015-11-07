@@ -78,6 +78,9 @@ class Direction(IntEnum):
             itertools.repeat(dir_left, times=abs(sum_left)),
         )
 
+    def __str__(self):
+        return self.name
+
 assert     Direction.up.is_opposite(Direction.down)
 assert     Direction.left.is_opposite(Direction.right)
 assert not Direction.up.is_opposite(Direction.right)
@@ -95,10 +98,10 @@ class NeuronType(Enum):
     OR    = 'o'
 
     @staticmethod
-    def ixano(): return (e for e in NeuronType)
+    def ixano(): return tuple(e for e in NeuronType)
     @staticmethod
-    def xano(): return (e for e in NeuronType
-                        if e is not NeuronType.INPUT)
+    def xano(): return tuple(e for e in NeuronType
+                             if e is not NeuronType.INPUT)
 
 assert ''.join(e.value for e in NeuronType.ixano())== NeuronType.ixano.__name__
 assert ''.join(e.value for e in NeuronType.xano()) == NeuronType.xano.__name__
