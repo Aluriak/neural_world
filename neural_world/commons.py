@@ -3,6 +3,8 @@ Defines global values, types and access to the logger.
 
 """
 import logging
+import logging.config
+import logging.handlers
 import itertools
 from enum import Enum, IntEnum
 from functools import reduce
@@ -13,14 +15,18 @@ from neural_world.info import PACKAGE_NAME
 
 
 # DIRECTORIES AND FILES
-DIR_PACKAGE = PACKAGE_NAME + '/'
-DIR_LOGS    = DIR_PACKAGE + 'logs/'
-DIR_ASP     = DIR_PACKAGE + 'asp/'
-ASP_SOLVING = DIR_ASP + 'neural_solving.lp'
+DIR_PACKAGE  = PACKAGE_NAME + '/'
+DIR_LOGS     = DIR_PACKAGE + 'logs/'
+DIR_ASP      = DIR_PACKAGE + 'asp/'
+ASP_SOLVING  = DIR_ASP + 'neural_solving.lp'
 ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
 # LOGGER CONSTANTS
 LOGGER_NAME = PACKAGE_NAME
 LOG_LEVEL   = logging.DEBUG
+MAIN_LOGGER = logging.getLogger(LOGGER_NAME)
+SUBLOGGER_SOLVING = 'solving'
+SUBLOGGER_LIFE    = 'life'
+SUBLOGGER_SEPARATOR = '_'  # '.' for allowing inheritance
 # ASP SOLVING OPTIONS
 ASP_GRINGO_OPTIONS = ''  # no default options
 ASP_CLASP_OPTIONS  = ''  # options of solving heuristics
@@ -99,39 +105,88 @@ assert ''.join(e.value for e in NeuronType.xano()) == NeuronType.xano.__name__
 
 
 # LOGGING DEFINITION
-def logger(name=LOGGER_NAME, logfilename=None):
-    """Return logger of given name, without initialize it.
+def logger(name=None, logfilename=None):
+    """Return logger of the package, without initialize it.
 
+    If name is provided, a sublogger PACKAGE_NAME.name will be returned.
     Equivalent of logging.getLogger() call.
     """
-    return logging.getLogger(name)
+    assert logging.getLogger(LOGGER_NAME) == MAIN_LOGGER
+    if name:
+        return logging.getLogger(LOGGER_NAME + SUBLOGGER_SEPARATOR + name)
+    else:
+        return logging.getLogger(LOGGER_NAME)  # equivalent to main logger
 
-_logger = logging.getLogger(LOGGER_NAME)
-_logger.setLevel(LOG_LEVEL)
+def log_level(level=None, name=None):
+    """Set terminal log level to given one, or return the current
+    loglevel if None is given."""
+    target_logger = logger(name)  # get target logger
+    handlers = (_ for _ in target_logger.handlers
+                if _.__class__ is logging.StreamHandler)
+    if level:
+        for handler in handlers:
+            handler.setLevel(level.upper())
+        return level
+    else:
+        levels = Counter(h.level for h in handlers)
+        return max(levels)
 
-# log file
-formatter    = logging.Formatter(
-    '%(asctime)s :: %(levelname)s :: %(message)s'
-)
-file_handler = RotatingFileHandler(
-    DIR_LOGS + LOGGER_NAME + '.log',
-    'a', 1000000, 1
-)
-file_handler.setLevel(LOG_LEVEL)
-file_handler.setFormatter(formatter)
-_logger.addHandler(file_handler)
+logging.config.dictConfig({
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s',
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s',
+        },
+    },
+    'handlers': {
+        'console':{
+            'level':LOG_LEVEL,
+            'class':'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'logfile': {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': DIR_LOGS + LOGGER_NAME + '.log',
+            'mode': 'w',
+            'maxBytes': 2**24,
+            'formatter': 'verbose',
+        },
+        'logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_SOLVING: {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': DIR_LOGS + LOGGER_NAME + '.' + SUBLOGGER_SOLVING + '.log',
+            'mode': 'w',
+            'maxBytes': 2**24,
+            'formatter': 'verbose',
+        },
+        'logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_LIFE: {
+            'level': LOG_LEVEL,
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': DIR_LOGS + LOGGER_NAME + '.' + SUBLOGGER_LIFE + '.log',
+            'mode': 'w',
+            'maxBytes': 2**24,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        PACKAGE_NAME: {
+            'handlers':['console', 'logfile'],
+            'propagate': True,
+            'level':LOG_LEVEL,
+        },
+        PACKAGE_NAME + '_solving': {
+            'handlers':['logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_SOLVING],
+            'level':LOG_LEVEL,
+        },
+        PACKAGE_NAME + '_life': {
+            'handlers':['logfile' + SUBLOGGER_SEPARATOR + SUBLOGGER_LIFE],
+            'level':LOG_LEVEL,
+        },
+    }
+})
 
-# terminal log
-stream_handler = logging.StreamHandler()
-formatter      = logging.Formatter('%(levelname)s: %(message)s')
-stream_handler.setFormatter(formatter)
-stream_handler.setLevel(LOG_LEVEL)
-_logger.addHandler(stream_handler)
-
-def log_level(level):
-    """Set terminal log level to given one"""
-    handlers = (_ for _ in _logger.handlers
-                if _.__class__ is logging.StreamHandler
-               )
-    for handler in handlers:
-        handler.setLevel(level.upper())
