@@ -4,15 +4,17 @@ It provides an API used by the Actions subclasses.
 
 """
 import itertools
-from random import random
+from random import random, randrange
+from collections import defaultdict
 
 import neural_world.config as config
 import neural_world.commons as commons
 from neural_world.nutrient import Nutrient
+from neural_world.individual import Individual
 from neural_world.bounded_defaultdict import BoundedDefaultDict
 
 
-LOGGER = commons.logger()
+LOGGER = commons.logger('life')
 
 
 class World:
@@ -54,9 +56,15 @@ class World:
         self.space[coords].add(obj)
         return obj
 
+    def spawn_from(self, indiv, coords):
+        """Create and place a new indiv, created from given one."""
+        new = self.incubator.clone(indiv)
+        self.add(new, coords)
+        LOGGER.info('REPLICATE: ' + str(indiv) + ' gives ' + str(new) + '.')
+
     def regenerate_nutrient(self):
         """Place randomly nutrient in the world"""
-        for square in self:
+        for square in self.squares:
             if random() < self.nutrient_regen:
                 square.add(Nutrient())
 
@@ -82,6 +90,13 @@ class World:
             for obj in objects
         )
 
+    def random_coords(self):
+        return (randrange(self.width), randrange(self.height))
+
+    @property
+    def have_life(self):
+        return self.object_counter[Individual] > 0
+
     @property
     def ordered_objects(self):
         return (
@@ -90,6 +105,10 @@ class World:
                 range(self.width), range(self.height)
             )
         )
+
+    @property
+    def squares(self):
+        return self.space.values()
 
     def neighbors(self, coords):
         "Return a generator of coords that are the neighbors of given ones"
