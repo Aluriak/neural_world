@@ -9,6 +9,7 @@ from collections import defaultdict
 
 import neural_world.config as config
 import neural_world.commons as commons
+import neural_world.observer as observer
 from neural_world.nutrient import Nutrient
 from neural_world.individual import Individual
 from neural_world.bounded_defaultdict import BoundedDefaultDict
@@ -17,7 +18,7 @@ from neural_world.bounded_defaultdict import BoundedDefaultDict
 LOGGER = commons.logger('life')
 
 
-class World:
+class World(observer.Observable):
     """Data container about the simulation.
 
     Provides API for Actions subclasses and Observers.
@@ -27,6 +28,7 @@ class World:
     def __init__(self, width:int, height:int, incubator,
                  nutrient_density:float, nutrient_regen:float,
                  indiv_density:float=None, indiv_count:int=None):
+        super().__init__()
         self.width, self.height = width, height
         self.space              = BoundedDefaultDict((width, height), set)
         self.incubator          = incubator
@@ -50,8 +52,6 @@ class World:
 
 
 
-        # Others
-        self.observers = set()
 
 
     def remove(self, obj, coords):
@@ -72,6 +72,7 @@ class World:
         new = self.incubator.clone(indiv)
         self.add(new, coords)
         LOGGER.info('REPLICATE: ' + str(indiv) + ' gives ' + str(new) + '.')
+        self.notify_observers({observer.signal.NEW_INDIVIDUAL: new})
 
     def regenerate_nutrient(self):
         """Place randomly nutrient in the world"""
@@ -127,15 +128,3 @@ class World:
             self.space[neighbor]
             for neighbor in config.NEIGHBOR_ACCESS(coords)
         )
-
-    def register(self, observer):
-        "Add given observer to set of observers"
-        self.observers.add(observer)
-
-    def unregister(self, observer):
-        "Remove given observer from set of observers"
-        self.observers.remove(observer)
-
-    def notify(self, *args, **kwargs):
-        "notify all observers"
-        [o.update(self, *args, **kwargs) for o in self.observers]
