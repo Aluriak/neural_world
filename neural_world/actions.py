@@ -7,7 +7,7 @@ import neural_world.commons as commons
 from neural_world.commons import Direction
 
 
-LOGGER = commons.logger()
+LOGGER = commons.logger('life')
 
 
 class Action:
