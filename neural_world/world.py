@@ -26,20 +26,28 @@ class World:
 
     def __init__(self, width:int, height:int, incubator,
                  nutrient_density:float, nutrient_regen:float,
-                 indiv_density:float):
+                 indiv_density:float=None, indiv_count:int=None):
         self.width, self.height = width, height
         self.space              = BoundedDefaultDict((width, height), set)
         self.incubator          = incubator
-        self.nutrient_density   = nutrient_density
         self.nutrient_regen     = nutrient_regen
-        self.indiv_density      = indiv_density
+        self.object_counter     = defaultdict(int)
 
         # Populate the world
         for coords, square in self.ordered_objects:
             if random() < nutrient_density:
                 square.add(Nutrient())
-            if random() < indiv_density:
+                self.object_counter[Nutrient] += 1
+            if indiv_density and random() < indiv_density:
                 square.add(self.incubator.spawn())
+                self.object_counter[Individual] += 1
+        if indiv_count:
+            # add indiv_count individuals in the world, randomly
+            for _ in range(indiv_count):
+                new = self.incubator.spawn()
+                self.add(new, self.random_coords())
+
+
 
         # Others
         self.observers = set()
@@ -49,11 +57,13 @@ class World:
         """Remove an object from space at given coords, and return it"""
         square = self.space[coords]
         square.remove(obj)
+        self.object_counter[obj.__class__] -= 1
         return obj
 
     def add(self, obj, coords):
         """Place given obj at given coords, and return it"""
         self.space[coords].add(obj)
+        self.object_counter[obj.__class__] += 1
         return obj
 
     def spawn_from(self, indiv, coords):
