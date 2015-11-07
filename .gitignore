@@ -1,0 +1,8 @@
+*.pyc
+.*.swp
+venv/
+*.log
+debug/
+Session.vim
+asp_py_lextab.py
+asp_py_parsetab.py
