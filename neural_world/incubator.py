@@ -14,8 +14,8 @@ from neural_world.individual import Individual
 class Incubator:
     """Spawn Individual instances"""
 
-    def __init__(self):
-        pass
+    def __init__(self, mutator=None):
+        self.mutator = mutator
 
     def spawn(self):
         nb_neuron = randint(2, 10)
@@ -26,10 +26,10 @@ class Incubator:
         ))
         types = (random.choice(tuple(NeuronType.xano()))
                  for _ in range(nb_neuron))
-        random.neuron_id = partial(randint, 1, total_nb_neuron+1)
+        random.neuron_id = partial(randint, 1, total_nb_neuron + 1)
         edges = (
             (random.neuron_id(), random.neuron_id())
-            for _ in range(randint(nb_neuron, nb_neuron*4))
+            for _ in range(randint(nb_neuron, nb_neuron * 5))
         )
 
         return Individual(
