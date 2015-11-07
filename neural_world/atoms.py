@@ -11,8 +11,10 @@ ATOM = namedtuple('Atom', ['name', 'args'])
 
 def split(atom):
     """Return the splitted version of given atom.
+    If given atom is not correctly parsable, None will be returned.
 
     atom -- string formatted as an ASP readable atom
+
 
     >>>> split('edge(lacA,lacZ)')
     ('edge', ('lacA', 'lacZ'))
@@ -23,7 +25,10 @@ def split(atom):
         pred, data = payload.split('(')
         return ATOM(pred, tuple(data.split(',')))
     except ValueError:  # no args !
-        return ATOM(payload, None)
+        if len(payload) > 0:
+            return ATOM(payload, tuple())
+        else:
+            return None
 
 
 def arg(atom):
