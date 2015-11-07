@@ -32,23 +32,35 @@ class World(observer.Observable):
         self.width, self.height = width, height
         self.space              = BoundedDefaultDict((width, height), set)
         self.incubator          = incubator
+        self.nutrient_density   = nutrient_density
         self.nutrient_regen     = nutrient_regen
+        self.indiv_density      = indiv_density
+        self.indiv_count        = indiv_count
         self.object_counter     = defaultdict(int)
         self.step_number        = 0
 
-        # Populate the world
+    def populate(self):
+        """Populate the world as in initial case.
+
+        Note that without call this before any other treatment,
+        some methods can go wrong and the space can be
+        totally uninintialized.
+        Call this after register all observers seems to be a good idea, as some
+        initialization treatment (first individuals spawning for example) can
+        interest some of them.
+
+        """
+        # Populate the world according to densities
         for coords, square in self.ordered_objects:
-            if random() < nutrient_density:
+            if random() < self.nutrient_density:
                 square.add(Nutrient())
                 self.object_counter[Nutrient] += 1
-            if indiv_density and random() < indiv_density:
-                square.add(self.incubator.spawn())
-                self.object_counter[Individual] += 1
-        if indiv_count:
-            # add indiv_count individuals in the world, randomly
-            for _ in range(indiv_count):
-                new = self.incubator.spawn()
-                self.add(new, self.random_coords())
+            if self.indiv_density and random() < self.indiv_density:
+                self.spawn(square)
+        # Add indiv_count individuals in the world, randomly
+        if self.indiv_count:
+            for _ in range(self.indiv_count):
+                self.spawn(self.random_coords())
 
 
 
