@@ -43,7 +43,7 @@ def network_atoms_to_graphviz(network_atoms):
             idn, = args
             # If already in graph, then idn is an output
             # node already set as neuron.
-            graph[idn] += '\\(output)'
+            graph[idn] += '\n(output)'
         elif name == 'neuron' and len(args) == 2:  # neuron/2
             idn, ntype = args
             graph[idn] = NeuronType(ntype).name + graph.get(idn, '')
@@ -57,6 +57,6 @@ def network_atoms_to_graphviz(network_atoms):
 
     # Create and return the dot from graph and edges
     dot = Digraph()
-    [dot.node(idn, label) for idn, label in graph.items()]
+    [dot.node(idn, str(idn) + '\n' + label) for idn, label in graph.items()]
     [dot.edge(a, b) for a, b in edges]
     return dot
