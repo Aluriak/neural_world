@@ -38,3 +38,13 @@ class Incubator:
             edges=edges,
             energy=10,
         )
+
+    def clone(self, indiv, energy=None):
+        """Clone given individual, and apply self mutator on clone, which will
+        get the given energy.
+
+        If energy is None, half of the energy keeped by self will be given
+        to the new clone.
+
+        """
+        return indiv.clonage(self.mutator, energy)
