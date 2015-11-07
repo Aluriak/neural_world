@@ -24,10 +24,7 @@ class Individual:
         Individual.next_individual_id += 1
         # Management of neural network data
         self.nb_intermediate_neuron = nb_intermediate_neuron
-        self.nb_neuron = sum((
-            config.INPUT_NEURON_COUNT, config.OUTPUT_NEURON_COUNT,
-            nb_intermediate_neuron
-        ))
+        self.nb_neuron = Individual.neuron_total_count(nb_intermediate_neuron)
         self.neuron_types = tuple(neuron_types)
         self.edges = tuple(edges)
         # Construction of the neural network
@@ -106,6 +103,15 @@ class Individual:
             # edges
             ('edge(' + str(id1) + ',' + str(id2) + ').'
              for id1, id2 in individual.edges)
+        ))
+
+    @staticmethod
+    def neuron_total_count(nb_intermediate_neuron):
+        """Return the total number of neuron present in an individual
+        with given number of intermediate neuron."""
+        return sum((
+            config.INPUT_NEURON_COUNT, config.OUTPUT_NEURON_COUNT,
+            nb_intermediate_neuron
         ))
 
     @property
