@@ -18,8 +18,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % Keep edges oriented, from predecessor to successor.
-oedge(X,Y):- edge(X,Y) ; X<Y.
-oedge(Y,X):- edge(X,Y) ; X>Y.
+% Input neurons can't be successor of other neurons.
+oedge(X,Y):- edge(X,Y) ; X<Y ; not neuron(Y,i).
+oedge(X,Y):- edge(Y,X) ; X<Y ; not neuron(Y,i).
 
 % Shortcut: a neuron is a neuron, whatever is its type.
 neuron(X):- neuron(X,_).
