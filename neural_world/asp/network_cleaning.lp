@@ -33,6 +33,6 @@ connected(X):- connected(X,_).
 connected(X):- output(X).
 
 #show.
-#show edge(X,Y): oedge(X,Y).
+#show edge(X,Y): oedge(X,Y), connected(X), connected(Y).
 #show neuron(X,T): neuron(X,T), connected(X).
 #show output/1.
