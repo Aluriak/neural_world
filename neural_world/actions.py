@@ -41,6 +41,15 @@ class MoveAction(Action):
                      + str(self.directions) + ' -> ' + str(final_coords))
 
 
+class ReplicateAction(Action):
+
+    def __init__(self, obj, coords):
+        self.obj, self.coords = obj, coords
+
+    def execute(self, world):
+        world.spawn_from(self.obj, self.coords)
+
+
 class RemoveAction(Action):
 
     def __init__(self, obj, coords):
