@@ -32,6 +32,7 @@ class Individual:
         assert self.network_atoms.count('neuron') == self.nb_neuron
         # Cleaning, for remove useless data
         self.network_atoms = neural_network.clean(self.network_atoms)
+        assert self.network_atoms[-1] == '.'
         # Life support
         self.energy = energy
 
@@ -88,25 +89,25 @@ class Individual:
         # generator of ids. It must be a generator, for provides only one time
         #  each neuron in multiple partial reads.
         neuron_ids = (_ for _ in range(1, individual.nb_neuron + 1))
-        return ''.join(chain(
+        return '.'.join(chain(
             # input neurons
             ('neuron(' + str(idn) + ','
-             + config.INPUT_NEURON_TYPE.value + ').'
+             + config.INPUT_NEURON_TYPE.value + ')'
              for idn in islice(neuron_ids, 0, config.INPUT_NEURON_COUNT)),
             # intermediate neurons
-            ('neuron(' + str(idn) + ',' + neuron_type.value + ').'
+            ('neuron(' + str(idn) + ',' + neuron_type.value + ')'
              for idn, neuron_type in zip(
                  islice(neuron_ids, 0, individual.nb_intermediate_neuron),
                  individual.neuron_types
              )),
             # # output neurons: give their type and their output status.
             ('neuron(' + str(idn) + ',' + config.OUTPUT_NEURON_TYPE.value
-             + ').output(' + str(idn) + ').'  # this neuron is an output
+             + ').output(' + str(idn) + ')'  # this neuron is an output
              for idn in neuron_ids),  # all remaining IDs are for output neurons
             # edges
-            ('edge(' + str(id1) + ',' + str(id2) + ').'
+            ('edge(' + str(id1) + ',' + str(id2) + ')'
              for id1, id2 in individual.edges)
-        ))
+        )) + '.'
 
     @staticmethod
     def neuron_total_count(nb_intermediate_neuron):
