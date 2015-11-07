@@ -44,7 +44,7 @@ def react(individual, states:iter) -> tuple:
     # Atoms creation:
     #  - define the neural network
     #  - add an atom up/1 or down/1 foreach input neuron according to its state
-    input_atoms = individual.network_atoms + '.' + ''.join(
+    input_atoms = individual.network_atoms + ''.join(
         ('up' if is_up else 'down') + '(' + str(neuron) + ').'
         # position in list gives the neuron id
         for neuron, is_up in enumerate(states)
