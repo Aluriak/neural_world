@@ -6,7 +6,7 @@ Object placed in the World, consummed by Individuals.
 
 class Nutrient:
 
-    def __init__(self, energy=1):
+    def __init__(self, energy=4):
         self.energy = energy
 
     def update(self, engine, neighbors, coords):

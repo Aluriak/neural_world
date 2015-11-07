@@ -21,7 +21,7 @@ LOGGER = commons.logger()
 if __name__ == '__main__':
     i = Incubator()
     w = World(
-        width=10, height=10,
+        width=20, height=20,
         incubator=i,
         nutrient_density=0.8,
         nutrient_regen=0.1,
