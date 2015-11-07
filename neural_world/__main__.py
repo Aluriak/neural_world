@@ -1,13 +1,20 @@
 """
 
 usage:
-    __main__.py
+    __main__.py [options]
 
-
+options:
+    -h, --help          print this help
+    -v, --version       print version
+    --log-level=LEVEL   log level used for terminal output [default: warning]
 
 
 """
+import time
+import docopt
+
 from neural_world import commons
+from neural_world.info import VERSION
 from neural_world.world import World
 from neural_world.engine import Engine
 from neural_world.actions import NextStepAction
@@ -19,7 +26,12 @@ LOGGER = commons.logger()
 
 
 if __name__ == '__main__':
-    i = Incubator()
+    # CLI arguments handling
+    args = docopt.docopt(__doc__, version=VERSION)
+    commons.log_level(args['--log-level'])
+
+
+    i = Incubator(m)
     w = World(
         width=20, height=20,
         incubator=i,
