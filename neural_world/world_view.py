@@ -21,6 +21,7 @@ class TerminalWorldView:
 
     def update(self, world, *args, **kwargs):
         """Print World in the terminal"""
+        print('\n')
         x_prev, line = 0, ''
         for coords, objects in world.ordered_objects:
             x, y = coords
