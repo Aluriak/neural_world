@@ -17,7 +17,8 @@ from neural_world import commons
 from neural_world.info import VERSION
 from neural_world.world import World
 from neural_world.engine import Engine
-from neural_world.actions import NextStepAction
+from neural_world.mutator import Mutator
+from neural_world.actions import NextStepAction, AddAction
 from neural_world.incubator import Incubator
 from neural_world.world_view import TerminalWorldView
 
@@ -31,24 +32,35 @@ if __name__ == '__main__':
     commons.log_level(args['--log-level'])
 
 
+    # Individual Factory
+    m = Mutator(mutation_rate=0.2)
     i = Incubator(m)
+
+    # World
     w = World(
         width=20, height=20,
         incubator=i,
         nutrient_density=0.8,
-        nutrient_regen=0.1,
-        indiv_density=0.05,
+        nutrient_regen=0.005,
+        indiv_count=4,
     )
 
+    # Engine and View
     e = Engine(w)
     v = TerminalWorldView(e)
     w.register(v)
-    w.notify()
 
     try:
+        w.notify()
         while True:
-            input('next ?')
-            e.add(NextStepAction(e))
+            while w.have_life:
+                time.sleep(0.5)
+                e.add(NextStepAction(e))
+                e.invoke_all()
+            # try again, life !
+            v.update(w)
+            for _ in range(4):
+                e.add(AddAction(i.spawn()))
             e.invoke_all()
     except KeyboardInterrupt:
         LOGGER.info('Treatment loop finished through keyboard interruption.')
