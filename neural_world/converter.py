@@ -27,9 +27,12 @@ def network_atoms_to_dot(network_atoms):
     return network_atoms_to_graphviz(network_atoms).source
 
 
-def network_atoms_rendering(network_atoms):
+def network_atoms_rendering(network_atoms, filename=None, directory=None):
     """Print the given network_atoms in pdf. Spam your working screen."""
-    return network_atoms_to_graphviz(network_atoms).render(view=True)
+    return network_atoms_to_graphviz(network_atoms).render(
+        view=False, cleanup=True,  # don't show it, remove source
+        filename=filename, directory=directory
+    )
 
 
 def network_atoms_to_graphviz(network_atoms):
