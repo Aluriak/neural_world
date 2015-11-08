@@ -17,6 +17,7 @@ from . import observer
 class Archivist(observer.Observer):
     FILE_TEMPLATE = 'archive_%s_%s.%s'
     FILE_ARCHIVES = 'archive.txt'
+    GRAPHVIZ_LAYOUT = converter.GraphvizLayout.dot
 
     def __init__(self, archive_directory, simulation_id=None):
         # use simulation_id as the name of the subdir in archive directory
@@ -55,7 +56,8 @@ class Archivist(observer.Observer):
                 graph       = converter.network_atoms_to_dot(network_atoms)
                 render_file = self._archive_filename(new_indiv, version, 'png')
                 dot_file    = self._archive_filename(new_indiv, version, 'dot')
-                converter.graph_rendering(graph, render_file)
+                converter.graph_rendering(graph, render_file,
+                                          layout=Archivist.GRAPHVIZ_LAYOUT)
                 self.save(network_atoms, dot_file)
 
     def save(self, data, archive_filename):
