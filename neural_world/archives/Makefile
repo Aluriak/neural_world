@@ -8,3 +8,6 @@ clearall:
 
 shown: remold
 	$(IMAGE_VIEWER) sim_*/archive*cln.png
+
+showg: remold
+	$(IMAGE_VIEWER) sim_*/tree.png
