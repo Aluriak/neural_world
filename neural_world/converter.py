@@ -34,7 +34,7 @@ def graphdict_to_dot(graph_dict):
         for succ in (_ for _ in nexts):
             graph.add_node(succ)
             graph.add_edge(pred, succ)
-    return graph.string()
+    return str(graph)
 
 
 def network_atoms_to_dot(network_atoms):
