@@ -18,12 +18,13 @@ Moreover, individuals, when they reach 0 of energy, dies and disappears. Here is
 
 
 ## Usage
-Simpler way to use NW currently is:
+Simpler way to use Neural World currently is:
 
     make
 
 And, once you have failed to do something useful with that, you can:
 - see the logs, in *neural_world/logs/*, because you love the logs;
+- see the archives of your run, in *neural_world/archives/*, and look at all the graphs generated representing the neural networks in png;
 - see the ASP code, and notice the ridiculous number of LOC necessary for play with BNN;
 - look at the *neural_world/actions.py* source file. Its high-level and give a good look at the global behavior of the program;
 
@@ -39,6 +40,17 @@ Pyasp needs a configuration. Currently, the only way i know to do that is:
 
 This manipulation is necessary while pyasp doesn't get the used version of gringo and clasp. (4.5.3 and 3.1.3)
 This program is tested with gringo 4.5.1 and 4.5.3, and not compliant with versions 4.4.x, because of some known bugs.
+
+
+## Next steps
+- [ ] implement communication between individuals (input neuron take its value from output neuron of neighbor individual);
+- [ ] turn binary neural network in discrete neural network (use of integer instead of True/False);
+- [ ] implement individual global states (output neuron gives values for input neurons at next step);
+- [ ] use [ACCC](https://github.com/Aluriak/ACCC) for create neural networks and perform the mutations;
+- [ ] add some basical command line arguments: (automatically creat neural network rendering, for example);
+- [ ] rewrite the main for support user configurations and embedding;
+- [ ] do something cool with the Nutrient concept (game of life populating ? Evolution capabilities ?);
+- [ ] improve genealogic tree outputs;
 
 
 ## Binary Neural Networks definition
