@@ -4,11 +4,24 @@ graph into a standard graph format.
 
 """
 import tempfile
-import pygraphviz as pgv
+from enum import Enum
 from collections import defaultdict
+
+import pygraphviz as pgv
 
 from neural_world.atoms import split as atoms_split
 from neural_world.commons import NeuronType
+
+
+class GraphvizLayout(Enum):
+    """Graphiz layouts for graph rendering that are usable
+    from scratch with pygraphviz module"""
+    neato   = 'neato'
+    dot     = 'dot'
+    twopi   = 'twopi'
+    circo   = 'circo'
+    fdp     = 'fdp'
+    sfdp    = 'sfdp'
 
 
 def graphdict_to_dot(graph_dict):
@@ -29,22 +42,24 @@ def network_atoms_to_dot(network_atoms):
     return str(network_atoms_to_graphviz(network_atoms))
 
 
-def graph_rendering(graph_data, filename='output.png'):
+def graph_rendering(graph_data, filename='output.png', layout=GraphvizLayout.dot):
     """Draw the given graph in given filename.
 
     graph_data: DOT formatted string describing a graph
         (return value of  network_atoms_to_dot(1)),
         or a pygraphviz.AGraph instance.
     filename: file where the rendering will be saved.
+    layout: program used by graphviz for drawing the graph.
+        (see GraphvizLayout for available values)
     return: the pygraphviz.AGraph instance that have been rendered.
 
     """
     # convert network_atoms in pgv.AGraph, if necessary
     if isinstance(graph_data, pgv.AGraph):
         graph = graph_data
-    else:
+    else:  # graph_data is a dot formatted string
         graph = pgv.AGraph(graph_data)  # create an AGraph directly from dot
-    graph.draw(filename, prog='dot')
+    graph.draw(filename, prog=layout.value)
     return graph
 
 
