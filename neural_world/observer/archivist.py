@@ -18,7 +18,7 @@ class Archivist(observer.Observer):
 
     def __init__(self, archive_directory, simulation_id=None):
         # use simulation_id as the name of the subdir in archive directory
-        self.simulation_id = str(simulation_id) if simulation_id else ''
+        self.simulation_id = 'sim_' + str(simulation_id) if simulation_id else ''
         self.archive_directory = os.path.join(archive_directory, self.simulation_id)
         try:
             os.mkdir(self.archive_directory)
