@@ -28,6 +28,11 @@ And, once you have failed to do something useful with that, you can:
 - see the ASP code, and notice the ridiculous number of LOC necessary for play with BNN;
 - look at the *neural_world/actions.py* source file. Its high-level and give a good look at the global behavior of the program;
 
+### Archives
+Are Generated archives for each run performed, thanks to the *Archivist* observer of World.
+By default, the Archivist directly compiles [dot data]() through [pygraphviz]() module, and render all graphs in dedicated PNG pictures.
+This behavior can be changed, in order to get a quicker simulation computation, with the command line interface.
+
 
 ## Installation
 First, some Python modules need to be installed, including docopt and pyasp.
