@@ -6,7 +6,8 @@ usage:
 options:
     -h, --help          print this help
     -v, --version       print version
-    --log-level=LEVEL   log level used for terminal output [default: warning]
+    --log-level=LEVEL   log level used for terminal output   [default: warning]
+    --render-png=BOOL   activate png files generation        [default: 1]
 
 
 """
@@ -31,6 +32,7 @@ if __name__ == '__main__':
     # CLI arguments handling
     args = docopt.docopt(__doc__, version=VERSION)
     commons.log_level(args['--log-level'])
+    render_png = bool(int(args['--render-png']))
 
 
     # Individual Factory
@@ -49,8 +51,9 @@ if __name__ == '__main__':
     # Engine and View
     e = Engine(w)
     v = TerminalWorldView(e)
-    a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()))
-    t = TreeBuilder(a.archive_directory)
+    a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()),
+                  render_graph=render_png)
+    t = TreeBuilder(a.archive_directory, render_graph=render_png)
     [w.register(_) for _ in (v, a, t)]
 
     # Initialize the world

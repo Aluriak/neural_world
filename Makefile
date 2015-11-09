@@ -3,8 +3,9 @@ LOGLEVEL=--log-level=debug
 LOGLEVEL=--log-level=info
 #LOGLEVEL=--log-level=warning
 #LOGLEVEL=--log-level=error
+#NOGRAPH=--render-png=0
 
-OPTIONS=$(LOGLEVEL)
+OPTIONS=$(LOGLEVEL) $(NOGRAPH)
 
 
 all:
