@@ -13,9 +13,10 @@ class TreeBuilder(observer.Observer):
     """Observer of World that maintain a tree of life"""
     GRAPHVIZ_LAYOUT = converter.GraphvizLayout.twopi
 
-    def __init__(self, archive_directory):
+    def __init__(self, archive_directory, render_graph=True):
         self.tree = defaultdict(list)
         self.archive_directory = archive_directory
+        self.render_graph = render_graph
 
     def update(self, world, signals):
         if observer.Signal.NEW_INDIVIDUAL in signals:
@@ -29,5 +30,6 @@ class TreeBuilder(observer.Observer):
         dot = converter.graphdict_to_dot(self.tree)
         with open(filename, 'w') as fd:
             fd.write(dot)
-        converter.graph_rendering(dot, filename + '.png',
-                                  layout=TreeBuilder.GRAPHVIZ_LAYOUT)
+        if self.render_graph:
+            converter.graph_rendering(dot, filename + '.png',
+                                      layout=TreeBuilder.GRAPHVIZ_LAYOUT)
