@@ -5,6 +5,7 @@ and keep alive a register of events easily parsable.
 
 """
 import os
+from functools import partial
 
 import neural_world.config as config
 import neural_world.commons as commons
@@ -19,7 +20,12 @@ class Archivist(observer.Observer):
     FILE_ARCHIVES = 'archive.txt'
     GRAPHVIZ_LAYOUT = converter.GraphvizLayout.dot
 
-    def __init__(self, archive_directory, simulation_id=None):
+    def __init__(self, archive_directory, simulation_id=None, *,
+                 save_graph=True, render_graph=True):
+        # data saving options
+        self.save_graph = save_graph
+        self.render_graph = render_graph
+        self.do_graph = any((save_graph, render_graph))
         # use simulation_id as the name of the subdir in archive directory
         self.simulation_id = 'sim_' + str(simulation_id) if simulation_id else ''
         self.archive_directory = os.path.join(archive_directory, self.simulation_id)
@@ -46,19 +52,22 @@ class Archivist(observer.Observer):
     def update(self, world, signals):
         """Intercept new individuals creation for create a snapshot
         of their neural networks, in DOT format and PNG picture."""
-        if observer.Signal.NEW_INDIVIDUAL in signals:
+        if self.do_graph and observer.Signal.NEW_INDIVIDUAL in signals:
             new_indiv, parent = signals[observer.Signal.NEW_INDIVIDUAL]
+            gen_filename = partial(self._archive_filename, new_indiv)
             network_versions = (
                 ('dot_cln', new_indiv.network_atoms),
                 ('dot_all', new_indiv.network_atoms_all)
             )
             for version, network_atoms in network_versions:
-                graph       = converter.network_atoms_to_dot(network_atoms)
-                render_file = self._archive_filename(new_indiv, version, 'png')
-                dot_file    = self._archive_filename(new_indiv, version, 'dot')
-                converter.graph_rendering(graph, render_file,
-                                          layout=Archivist.GRAPHVIZ_LAYOUT)
-                self.save(network_atoms, dot_file)
+                graph = converter.network_atoms_to_dot(network_atoms)
+                if self.save_graph:
+                    dot_file = gen_filename(version, 'dot')
+                    self.save(network_atoms, dot_file)
+                if self.render_graph:
+                    render_file = gen_filename(version, 'png')
+                    converter.graph_rendering(graph, render_file,
+                                              layout=Archivist.GRAPHVIZ_LAYOUT)
 
     def save(self, data, archive_filename):
         "Save given data in file named archive_filename"
