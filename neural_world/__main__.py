@@ -63,9 +63,9 @@ if __name__ == '__main__':
 
     try:
         w.notify_observers()
-        while True:
-            while w.have_life:
-                time.sleep(0.1)
+        while not w.finished:
+            while w.have_life and not w.finished:
+                time.sleep(0.6)
                 e.add(NextStepAction(e))
                 e.invoke_all()
             # try again, life !
