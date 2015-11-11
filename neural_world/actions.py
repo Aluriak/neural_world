@@ -85,3 +85,9 @@ class NextStepAction(Action):
         world.regenerate_nutrient()
         world.step_number += 1
         world.notify_observers()
+
+
+class QuitAction(Action):
+
+    def execute(self, world):
+        world.finished = True
