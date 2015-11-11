@@ -39,5 +39,3 @@ class TerminalWorldView(observer.Observer):
                         line += self.graphics[Nutrient]
                 else:
                     line += ' '
-
-
