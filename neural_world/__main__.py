@@ -20,7 +20,8 @@ from neural_world.world import World
 from neural_world.engine import Engine
 from neural_world.mutator import Mutator
 from neural_world.actions import NextStepAction, AddAction
-from neural_world.observer import Archivist, TerminalWorldView, TreeBuilder
+from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder,
+                                   InteractiveTerminalWorldView)
 from neural_world.incubator import Incubator
 
 
@@ -50,7 +51,8 @@ if __name__ == '__main__':
 
     # Engine and View
     e = Engine(w)
-    v = TerminalWorldView(e)
+    # v = TerminalWorldView(e)
+    v = InteractiveTerminalWorldView(e)
     a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()),
                   render_graph=render_png)
     t = TreeBuilder(a.archive_directory, render_graph=render_png)
