@@ -63,7 +63,7 @@ class Archivist(observer.Observer):
                 graph = converter.network_atoms_to_dot(network_atoms)
                 if self.save_graph:
                     dot_file = gen_filename(version, 'dot')
-                    self.save(network_atoms, dot_file)
+                    self.save(graph, dot_file)
                 if self.render_graph:
                     render_file = gen_filename(version, 'png')
                     converter.graph_rendering(graph, render_file,
