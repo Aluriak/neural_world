@@ -38,6 +38,7 @@ class World(observer.Observable):
         self.indiv_count        = indiv_count
         self.object_counter     = defaultdict(int)
         self.step_number        = 0
+        self.finished           = False  # just an indication flag
 
     def populate(self):
         """Populate the world as in initial case.
