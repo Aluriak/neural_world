@@ -2,18 +2,31 @@
 Solving functions for neural network exploitation.
 
 """
+import os
 from functools   import partial
 from collections import deque
+
 import pyasp.asp as asp
-import os
 
 import neural_world.config  as config
 import neural_world.atoms   as atoms
 import neural_world.commons as commons
-from neural_world.commons import Direction
+from .commons import DIR_ASP, Direction, SUBLOGGER_SOLVING
 
 
-LOGGER = commons.logger('solving')
+# DIRECTORIES AND FILES
+FILE_ASP_SOLVING  = DIR_ASP + 'neural_solving.lp'
+FILE_ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
+
+# ASP SOLVING OPTIONS
+ASP_GRINGO_OPTIONS = ''  # no default options
+ASP_CLASP_OPTIONS  = ''  # options of solving heuristics
+# ASP_CLASP_OPTIONS += ' -Wno-atom-undefined'
+# ASP_CLASP_OPTIONS += ' --configuration=frumpy'
+# ASP_CLASP_OPTIONS += ' --heuristic=Vsids'
+
+
+LOGGER = commons.logger(SUBLOGGER_SOLVING)
 
 
 def square_to_input_neurons(square):
@@ -51,7 +64,7 @@ def react(individual, states:iter) -> tuple:
     )
     LOGGER.debug('INPUT ATOMS: ' + input_atoms)
     # ASP solver call
-    model = model_from(input_atoms, commons.ASP_SOLVING)
+    model = model_from(input_atoms, FILE_ASP_SOLVING)
     LOGGER.debug('OUTPUT ATOMS: ' + str(model))
     # Directions of movement extraction: get id of up-state output neurons
     output_neurons_id = tuple(int(atoms.arg(a)) for a in model
@@ -75,7 +88,7 @@ def clean(network_atoms):
     return: a new string describing neural network through ASP atoms, cleaned.
 
     """
-    return '.'.join(model_from(network_atoms, commons.ASP_CLEANING)) + '.'
+    return '.'.join(model_from(network_atoms, FILE_ASP_CLEANING)) + '.'
 
 
 def model_from(base_atoms, aspfiles, aspargs={},
@@ -100,8 +113,8 @@ def model_from(base_atoms, aspfiles, aspargs={},
     constants = ' -c '.join(str(k)+'='+str(v) for k,v in aspargs.items())
     if len(aspargs) > 0:  # must begin by a -c for announce the first constant
         constants = '-c ' + constants
-    gringo_options = ' '.join((constants, commons.ASP_GRINGO_OPTIONS, gringo_options))
-    clasp_options += ' ' + ' '.join(commons.ASP_CLASP_OPTIONS)
+    gringo_options = ' '.join((constants, ASP_GRINGO_OPTIONS, gringo_options))
+    clasp_options += ' ' + ' '.join(ASP_CLASP_OPTIONS)
 
     #  create solver and ground base and program in a single ground call.
     solver = asp.Gringo4Clasp(gringo_options=gringo_options,
