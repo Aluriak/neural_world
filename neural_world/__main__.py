@@ -14,12 +14,13 @@ options:
 import time
 import docopt
 
+import neural_world.actions as action
 from neural_world import commons
 from neural_world.info import VERSION
 from neural_world.world import World
+from neural_world.config import Configuration
 from neural_world.engine import Engine
 from neural_world.mutator import Mutator
-from neural_world.actions import NextStepAction, AddAction
 from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder,
                                    InteractiveTerminalWorldView)
 from neural_world.incubator import Incubator
@@ -35,46 +36,38 @@ if __name__ == '__main__':
     commons.log_level(args['--log-level'])
     render_png = bool(int(args['--render-png']))
 
+    # Configuration
+    config = Configuration()
+    assert config.is_valid()
 
-    # Individual Factory
-    m = Mutator(mutation_rate=0.2)
-    i = Incubator(m)
+    # Engine from rules
+    e = Engine.generate_from(config)
 
-    # World
-    w = World(
-        width=20, height=20,
-        incubator=i,
-        nutrient_density=0.8,
-        nutrient_regen=0.005,
-        indiv_count=INITIAL_LIFE_COUNT,
-    )
-
-    # Engine and View
-    e = Engine(w)
-    # v = TerminalWorldView(e)
-    v = InteractiveTerminalWorldView(e)
+    # Observers
+    v = TerminalWorldView(e)
     a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()),
                   render_graph=render_png)
     t = TreeBuilder(a.archive_directory, render_graph=render_png)
-    [w.register(_) for _ in (v, a, t)]
+    [e.world.register(_) for _ in (v, a, t)]
 
     # Initialize the world
-    w.populate()
+    e.world.populate()
+    input('next?')
 
+    # Main loop
     try:
-        w.notify_observers()
-        while not w.finished:
-            while w.have_life and not w.finished:
-                time.sleep(0.6)
-                e.add(NextStepAction(e))
-                e.invoke_all()
-            # try again, life !
-            v.update(w)
-            for _ in range(INITIAL_LIFE_COUNT):
-                e.add(AddAction(i.spawn()))
-            e.invoke_all()
-            w.step_number = 0
+        while not config.terminated:
+            e.apply(config)
+            input('next?')
+
+            if not e.world.have_life:
+                # try again, life !
+                v.update(e.world)
+                for _ in range(INITIAL_LIFE_COUNT):
+                    e.add(action.AddAction(config.incubator.spawn()))
+                e.world.step_number = 0
+
     except KeyboardInterrupt:
         LOGGER.info('Treatment loop finished through keyboard interruption.')
-    w.deinit()
+    e.world.deinit()
     LOGGER.info('Deinitialization of World')
