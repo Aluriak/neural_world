@@ -13,6 +13,7 @@ options:
 """
 import time
 import docopt
+from functools import partial
 
 import neural_world.actions as action
 from neural_world import commons
@@ -37,15 +38,15 @@ if __name__ == '__main__':
     config = Configuration()
     assert config.is_valid()
 
-    # Engine from rules
-    e = Engine.generate_from(config)
-
     # Observers
-    v = TerminalWorldView(e)
-    a = Archivist(commons.DIR_ARCHIVES, simulation_id=int(time.time()),
-                  render_graph=render_png)
-    t = TreeBuilder(a.archive_directory, render_graph=render_png)
-    [e.world.register(_) for _ in (v, a, t)]
+    v = TerminalWorldView
+    a = partial(Archivist, archive_directory=config.dir_archive_simulation,
+                render_graph=render_png)
+    t = partial(TreeBuilder, archive_directory=config.dir_archive_simulation,
+                render_graph=render_png)
+
+    # Engine from rules
+    e = Engine.generate_from(config, observers=(v, a, t))
 
     # Initialize the world
     e.world.populate()
@@ -59,7 +60,6 @@ if __name__ == '__main__':
 
             if not e.world.have_life:
                 # try again, life !
-                v.update(e.world)
                 for _ in range(INITIAL_LIFE_COUNT):
                     e.add(action.AddAction(config.incubator.spawn()))
                 e.world.step_number = 0

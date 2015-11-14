@@ -38,9 +38,16 @@ class Engine:
             self.invoke_all()
 
     @staticmethod
-    def generate_from(config):
-        """Generate world according to config."""
+    def generate_from(config, observers=[]):
+        """Generate world according to config.
+
+        Given classes of Observer must wait for an engine as single parameter.
+
+        """
         world = World(config)
-        return Engine(world)
+        engine = Engine(world)
+        for observer_class in observers:
+            world.register(observer_class(engine))
+        return engine
 
 
