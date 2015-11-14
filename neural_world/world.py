@@ -10,9 +10,9 @@ from collections import defaultdict
 import neural_world.config as config
 import neural_world.commons as commons
 import neural_world.observer as observer
+from neural_world.space import Space
 from neural_world.nutrient import Nutrient
 from neural_world.individual import Individual
-from neural_world.bounded_defaultdict import BoundedDefaultDict
 
 
 LOGGER = commons.logger('life')
@@ -30,7 +30,7 @@ class World(observer.Observable):
                  indiv_density:float=None, indiv_count:int=None):
         super().__init__()
         self.width, self.height = width, height
-        self.space              = BoundedDefaultDict((width, height), set)
+        self.space              = Space((self.space_width, self.space_height))
         self.incubator          = incubator
         self.nutrient_density   = nutrient_density
         self.nutrient_regen     = nutrient_regen

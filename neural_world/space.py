@@ -1,12 +1,15 @@
 """
-Definition of a defaultdict subclass that handles limits in the space.
+Definition of the Space class that placement of objects in space.
 
 """
 from collections import defaultdict
 
 
-class BoundedDefaultDict(defaultdict):
-    """Needs bounds in N^k at construction.
+class Space(defaultdict):
+    """Dictionnary (coords in k-dimension space):(set of object) that handle
+    space borders.
+
+    Needs bounds in N^k at construction.
 
     This assume that all keys are k-tuple of integers in N, and ensure
     that values in keys will never overpass the bound
@@ -14,9 +17,9 @@ class BoundedDefaultDict(defaultdict):
 
     """
 
-    def __init__(self, bounds, defaultvalue=None):
-        "Bounds must be maximal values reachable by values in keys"
-        super().__init__(defaultvalue)
+    def __init__(self, bounds):
+        "Bounds must be maximal values reachable by coords"
+        super().__init__(set)
         self.bounds = bounds
 
     def fix_key(self, key):
@@ -28,3 +31,4 @@ class BoundedDefaultDict(defaultdict):
 
     def __getitem__(self, key):
         return super().__getitem__(self.fix_key(key))
+
