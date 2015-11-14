@@ -73,19 +73,17 @@ class AddAction(Action):
             world.add(self.obj, self.coords)
 
 
-class NextStepAction(Action):
-
-    def __init__(self, engine, count=1):
-        self.engine = engine
-        self.count = count
+class StepComputedAction(Action):
 
     def execute(self, world):
-        for coords, obj in world:
-            obj.update(self.engine, world.neighbors(coords), coords)
-        world.regenerate_nutrient()
         world.step_number += 1
         world.notify_observers()
 
+
+class RegenerateNutrientsAction(Action):
+
+    def execute(self, world):
+        world.regenerate_nutrient()
 
 class QuitAction(Action):
 
