@@ -2,11 +2,17 @@
 Particular default values of the simulation are put here.
 
 """
+import os
+import time
 
 import neural_world.commons as commons
 from neural_world.commons import Direction, NeuronType
 from neural_world.neighbors import moore
 
+
+# Per simulation values
+DIR_SIMULATION_ARCHIVE = os.path.join(commons.DIR_ARCHIVES,
+                                      'sim_' + str(int(time.time())))
 
 # Individual constants
 INPUT_NEURON_COUNT  = 16

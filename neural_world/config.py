@@ -3,6 +3,7 @@ Definition of the Configuration class, that is a data holder.
 
 """
 import neural_world.default as default
+import neural_world.commons as commons
 from neural_world.mutator import Mutator
 from neural_world.commons import NeuronType
 from neural_world.incubator import Incubator
@@ -52,7 +53,8 @@ class Configuration:
                  neuron_inter_mincount=default.NEURON_INTER_MINCOUNT,
                  neuron_inter_maxcount=default.NEURON_INTER_MAXCOUNT,
                  neuron_edges_mincount=default.NEURON_EDGES_MINCOUNT,
-                 neuron_edges_maxcount=default.NEURON_EDGES_MAXCOUNT
+                 neuron_edges_maxcount=default.NEURON_EDGES_MAXCOUNT,
+                 dir_archive_simulation=default.DIR_SIMULATION_ARCHIVE
                 ):
         for varname, value in locals().items():
             self.__dict__[varname] = value

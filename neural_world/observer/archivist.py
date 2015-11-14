@@ -29,7 +29,7 @@ class Archivist(observer.Observer, action.ActionEmitter):
         self.do_graph = any((save_graph, render_graph))
         # use simulation_id as the name of the subdir in archive directory
         self.simulation_id = 'sim_' + str(simulation_id) if simulation_id else ''
-        self.archive_directory = os.path.join(archive_directory, self.simulation_id)
+        self.archive_directory = archive_directory
         # create the template file name used for storing data.
         #  template file is named after self ID, individual ID and save data.
         self.template = os.path.join(self.archive_directory,
@@ -82,3 +82,7 @@ class Archivist(observer.Observer, action.ActionEmitter):
     def _archive_filename(self, indiv, description='data', ext='txt'):
         "Return file name for given parameters"
         return self.template % (indiv.ID, description, ext)
+
+    @staticmethod
+    def archive_directory(archive_directory='', simulation_id=''):
+        return os.path.join(archive_directory, simulation_id)
