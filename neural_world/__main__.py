@@ -25,7 +25,6 @@ from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder,
 
 
 LOGGER = commons.logger()
-INITIAL_LIFE_COUNT = 4
 
 
 if __name__ == '__main__':
@@ -60,7 +59,7 @@ if __name__ == '__main__':
 
             if not e.world.have_life:
                 # try again, life !
-                for _ in range(INITIAL_LIFE_COUNT):
+                for _ in range(config.init_indiv_count):
                     e.add(action.AddAction(config.incubator.spawn()))
                 e.world.step_number = 0
 
