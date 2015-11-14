@@ -49,7 +49,7 @@ class Individual:
             directions = neural_network.react(self, states)
             engine.add(MoveAction(self, coords, directions))
             # spawn another unit if possible
-            if self.energy >= config.LIFE_DIVISION_MIN_ENERGY:
+            if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
                 engine.add(ReplicateAction(self, coords))
         else:
             engine.add(RemoveAction(self, coords))
@@ -92,8 +92,8 @@ class Individual:
         return '.'.join(chain(
             # input neurons
             ('neuron(' + str(idn) + ','
-             + config.INPUT_NEURON_TYPE.value + ')'
-             for idn in islice(neuron_ids, 0, config.INPUT_NEURON_COUNT)),
+             + default.INPUT_NEURON_TYPE.value + ')'
+             for idn in islice(neuron_ids, 0, default.INPUT_NEURON_COUNT)),
             # intermediate neurons
             ('neuron(' + str(idn) + ',' + neuron_type.value + ')'
              for idn, neuron_type in zip(
@@ -101,7 +101,7 @@ class Individual:
                  individual.neuron_types
              )),
             # # output neurons: give their type and their output status.
-            ('neuron(' + str(idn) + ',' + config.OUTPUT_NEURON_TYPE.value
+            ('neuron(' + str(idn) + ',' + default.OUTPUT_NEURON_TYPE.value
              + ').output(' + str(idn) + ')'  # this neuron is an output
              for idn in neuron_ids),  # all remaining IDs are for output neurons
             # edges
