@@ -6,7 +6,7 @@ import random
 from random import randint
 from functools import partial
 
-import neural_world.config as config
+import neural_world.default as default
 from neural_world.commons    import NeuronType
 from neural_world.individual import Individual
 

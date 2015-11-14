@@ -8,7 +8,7 @@ from collections import deque
 
 import pyasp.asp as asp
 
-import neural_world.config  as config
+import neural_world.default as default
 import neural_world.atoms   as atoms
 import neural_world.commons as commons
 from .commons import DIR_ASP, Direction, SUBLOGGER_SOLVING

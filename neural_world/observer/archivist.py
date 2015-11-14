@@ -7,7 +7,6 @@ and keep alive a register of events easily parsable.
 import os
 from functools import partial
 
-import neural_world.config as config
 import neural_world.commons as commons
 import neural_world.converter as converter
 from neural_world.nutrient import Nutrient

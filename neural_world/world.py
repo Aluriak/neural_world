@@ -7,7 +7,7 @@ import itertools
 from random import random, randrange
 from collections import defaultdict
 
-import neural_world.config as config
+import neural_world.default as default
 import neural_world.commons as commons
 import neural_world.observer as observer
 from neural_world.space import Space
@@ -162,7 +162,7 @@ class World(observer.Observable):
         "Return a generator of coords that are the neighbors of given ones"
         return (
             self.space[neighbor]
-            for neighbor in config.NEIGHBOR_ACCESS(coords)
+            for neighbor in default.NEIGHBOR_ACCESS(coords)
         )
 
     def deinit(self):

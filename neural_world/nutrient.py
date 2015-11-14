@@ -2,12 +2,12 @@
 Object placed in the World, consummed by Individuals.
 
 """
-import neural_world.config as config
+import neural_world.default as default
 
 
 class Nutrient:
 
-    def __init__(self, energy=config.NUTRIENT_DEFAULT_ENERGY):
+    def __init__(self, energy=default.NUTRIENT_ENERGY):
         self.energy = energy
 
     def update(self, engine, neighbors, coords):

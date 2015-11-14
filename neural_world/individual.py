@@ -4,7 +4,7 @@ Individual is a class that keep together id, dna and neural networks.
 """
 from itertools import islice, chain
 
-import neural_world.config as config
+import neural_world.default as default
 import neural_world.commons as commons
 from neural_world.commons import Direction
 from neural_world.commons import NeuronType
@@ -114,7 +114,7 @@ class Individual:
         """Return the total number of neuron present in an individual
         with given number of intermediate neuron."""
         return sum((
-            config.INPUT_NEURON_COUNT, config.OUTPUT_NEURON_COUNT,
+            default.INPUT_NEURON_COUNT, default.OUTPUT_NEURON_COUNT,
             nb_intermediate_neuron
         ))
 
