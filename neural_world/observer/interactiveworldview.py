@@ -15,7 +15,7 @@ import neural_world.commons as commons
 from neural_world.actions import QuitAction
 from neural_world.individual import Individual
 from neural_world.nutrient import Nutrient
-from . import worldview
+from . import terminalworldview as worldview
 
 
 LOGGER = commons.logger()

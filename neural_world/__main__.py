@@ -17,13 +17,10 @@ import docopt
 import neural_world.actions as action
 from neural_world import commons
 from neural_world.info import VERSION
-from neural_world.world import World
 from neural_world.config import Configuration
 from neural_world.engine import Engine
-from neural_world.mutator import Mutator
 from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder,
                                    InteractiveTerminalWorldView)
-from neural_world.incubator import Incubator
 
 
 LOGGER = commons.logger()

@@ -11,9 +11,9 @@ import neural_world.default as default
 import neural_world.commons as commons
 import neural_world.observer as observer
 from neural_world.space import Space
+from neural_world.commons import Configurable
 from neural_world.nutrient import Nutrient
 from neural_world.individual import Individual
-from neural_world.configurable import Configurable
 
 
 LOGGER = commons.logger('life')

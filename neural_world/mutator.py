@@ -11,7 +11,7 @@ import neural_world.commons as commons
 from neural_world.commons import Direction
 from neural_world.commons import NeuronType
 from neural_world.individual import Individual
-from neural_world.configurable import Configurable
+from neural_world.commons import Configurable
 
 
 LOGGER = commons.logger('life')

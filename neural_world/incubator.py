@@ -7,9 +7,9 @@ from random import randint
 from functools import partial
 
 import neural_world.default as default
-from neural_world.commons      import NeuronType
-from neural_world.individual   import Individual
-from neural_world.configurable import Configurable
+from neural_world.commons    import NeuronType
+from neural_world.individual import Individual
+from neural_world.commons    import Configurable
 
 
 class Incubator(Configurable):

@@ -5,7 +5,6 @@ Invoker of actions, from View onto World.
 import neural_world.commons as commons
 import neural_world.actions as action
 from neural_world.world import World
-from neural_world.commons import coroutine
 
 
 LOGGER = commons.logger()
