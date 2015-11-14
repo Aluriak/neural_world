@@ -6,24 +6,27 @@ Mutators are objects capable of modify data exploited by Individuals, allowing
 import logging
 from random import random, randrange, choice as random_choice
 
-import neural_world.config as config
+import neural_world.default as default
 import neural_world.commons as commons
 from neural_world.commons import Direction
 from neural_world.commons import NeuronType
 from neural_world.individual import Individual
+from neural_world.configurable import Configurable
 
 
 LOGGER = commons.logger('life')
 
 
-class Mutator:
+class Mutator(Configurable):
 
-    def __init__(self, mutation_rate):
-        self.mutation_rate = mutation_rate
+    def __init__(self, config):
+        super().__init__(config, config_fields=[
+            'mutation_rate',
+        ])
 
     def mutate(self, nb_intermediate_neuron, neuron_types, edges):
         """Return the data received in input, modified according to
-        mutation rate and mutation settings.
+        mutation settings.
 
         nb_intermediate_neuron: integer equal to number of intermediate neuron.
         neuron_types: iterable of NeuronType.
@@ -31,9 +34,9 @@ class Mutator:
 
         """
         MUTATION_RATE = self.mutation_rate
-        mutate_nb_neuron = random() < MUTATION_RATE, random() < MUTATION_RATE
+        mutate_nb_neuron   = random() < MUTATION_RATE, random() < MUTATION_RATE
         mutate_neuron_type = random() < MUTATION_RATE, random() < MUTATION_RATE
-        mutate_edges = random() < MUTATION_RATE, random() < MUTATION_RATE
+        mutate_edges       = random() < MUTATION_RATE, random() < MUTATION_RATE
 
         if any(mutate_nb_neuron):
             add, rmv = mutate_nb_neuron
