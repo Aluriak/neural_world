@@ -15,6 +15,9 @@ class Signal(Enum):
 class Observer:
     """Receive signals from an Observable"""
 
+    def __init__(self, *args, **kwargs):
+        pass
+
     def preprocessing(self, world):
         """Perform a pre-observation treatment"""
         pass
@@ -31,7 +34,7 @@ class Observer:
 class Observable:
     """Emit signals to its Observers"""
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         self.observers = set()
 
     def register(self, observer):

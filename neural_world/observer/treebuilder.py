@@ -6,14 +6,16 @@ import os
 from collections import defaultdict
 
 import neural_world.converter as converter
+import neural_world.actions as action
 from . import observer
 
 
-class TreeBuilder(observer.Observer):
+class TreeBuilder(observer.Observer, action.ActionEmitter):
     """Observer of World that maintain a tree of life"""
     GRAPHVIZ_LAYOUT = converter.GraphvizLayout.twopi
 
-    def __init__(self, archive_directory, render_graph=True):
+    def __init__(self, engine, archive_directory, render_graph=True):
+        super().__init__(invoker=engine)
         self.tree = defaultdict(list)
         self.archive_directory = archive_directory
         self.render_graph = render_graph

@@ -8,19 +8,21 @@ import os
 from functools import partial
 
 import neural_world.commons as commons
+import neural_world.actions as action
 import neural_world.converter as converter
 from neural_world.nutrient import Nutrient
 from neural_world.individual import Individual
 from . import observer
 
 
-class Archivist(observer.Observer):
+class Archivist(observer.Observer, action.ActionEmitter):
     FILE_TEMPLATE = 'archive_%s_%s.%s'
     FILE_ARCHIVES = 'archive.txt'
     GRAPHVIZ_LAYOUT = converter.GraphvizLayout.dot
 
-    def __init__(self, archive_directory, simulation_id=None, *,
+    def __init__(self, engine, archive_directory, simulation_id=None, *,
                  save_graph=True, render_graph=True):
+        super().__init__(invoker=engine)
         # data saving options
         self.save_graph = save_graph
         self.render_graph = render_graph

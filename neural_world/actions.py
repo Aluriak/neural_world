@@ -2,12 +2,26 @@
 Definitions of Actions class, which are designed to be applied
  on a World object instance.
 
+Define also the ActionEmitter base class, which is mostly designed
+ for simplifications of Action emission.
+
 """
 import neural_world.commons as commons
 from neural_world.commons import Direction
 
 
 LOGGER = commons.logger('life')
+
+
+class ActionEmitter:
+    """ActionEmitters is a base class which provides an API
+    to send actions to the invoker"""
+
+    def __init__(self, invoker):
+        self.invoker = invoker
+
+    def emit(self, action):
+        self.invoker.add(action)
 
 
 class Action:

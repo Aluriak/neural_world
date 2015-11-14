@@ -3,6 +3,7 @@ Basical implementation of a terminal view for World object.
 
 """
 import neural_world.commons as commons
+import neural_world.actions as action
 from neural_world.individual import Individual
 from neural_world.nutrient import Nutrient
 from . import observer
@@ -11,9 +12,9 @@ from . import observer
 LOGGER = commons.logger()
 
 
-class TerminalWorldView(observer.Observer):
+class TerminalWorldView(observer.Observer, action.ActionEmitter):
     def __init__(self, engine):
-        self.engine = engine
+        super().__init__(invoker=engine)
         self.graphics = {
             Nutrient: '·',
             Individual: '#',
