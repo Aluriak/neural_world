@@ -13,32 +13,31 @@ import neural_world.observer as observer
 from neural_world.space import Space
 from neural_world.nutrient import Nutrient
 from neural_world.individual import Individual
+from neural_world.configurable import Configurable
 
 
 LOGGER = commons.logger('life')
 
 
-class World(observer.Observable):
+class World(observer.Observable, Configurable):
     """Data container about the simulation.
 
     Provides API for Actions subclasses and Observers.
 
     """
 
-    def __init__(self, width:int, height:int, incubator,
-                 nutrient_density:float, nutrient_regen:float,
-                 indiv_density:float=None, indiv_count:int=None):
-        super().__init__()
-        self.width, self.height = width, height
+    def __init__(self, config):
+        observer.Observable.__init__(self)
+        Configurable.__init__(self, config=config, config_fields=[
+            'space_width', 'space_height',
+            'nutrient_regen', 'nutrient_energy', 'nutrient_density',
+            'init_indiv_density', 'init_indiv_count',
+            'incubator',
+        ])
+
         self.space              = Space((self.space_width, self.space_height))
-        self.incubator          = incubator
-        self.nutrient_density   = nutrient_density
-        self.nutrient_regen     = nutrient_regen
-        self.indiv_density      = indiv_density
-        self.indiv_count        = indiv_count
         self.object_counter     = defaultdict(int)
-        self.step_number        = 0
-        self.finished           = False  # just an indication flag
+        self.step_number        = 0  # step counter ; just an information
 
     def populate(self):
         """Populate the world as in initial case.
@@ -56,12 +55,14 @@ class World(observer.Observable):
             if random() < self.nutrient_density:
                 square.add(Nutrient())
                 self.object_counter[Nutrient] += 1
-            if self.indiv_density and random() < self.indiv_density:
+            if self.init_indiv_density and random() < self.init_indiv_density:
                 self.spawn(square)
         # Add indiv_count individuals in the world, randomly
-        if self.indiv_count:
-            for _ in range(self.indiv_count):
+        if self.init_indiv_count:
+            for _ in range(self.init_indiv_count):
                 self.spawn(self.random_coords())
+        # all observers can begin to work
+        self.notify_observers()
 
 
     def remove(self, obj, place):
@@ -139,7 +140,7 @@ class World(observer.Observable):
         )
 
     def random_coords(self):
-        return (randrange(self.width), randrange(self.height))
+        return (randrange(self.space_width), randrange(self.space_height))
 
     @property
     def have_life(self):
@@ -150,7 +151,7 @@ class World(observer.Observable):
         return (
             (coords, self.space[coords])
             for coords in itertools.product(
-                range(self.width), range(self.height)
+                range(self.space_width), range(self.space_height)
             )
         )
 
