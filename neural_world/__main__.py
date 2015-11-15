@@ -20,8 +20,8 @@ from neural_world import commons
 from neural_world.info import VERSION
 from neural_world.config import Configuration
 from neural_world.engine import Engine
-from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder,
-                                   InteractiveTerminalWorldView)
+from neural_world.prompt import Prompt
+from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder)
 
 
 LOGGER = commons.logger()
@@ -49,13 +49,13 @@ if __name__ == '__main__':
 
     # Initialize the world
     e.world.populate()
-    input('next?')
+    prompt = Prompt(config, e)
 
     # Main loop
     try:
         while not config.terminated:
+            prompt.input()
             e.apply(config)
-            input('next?')
 
             if not e.world.have_life:
                 # try again, life !
@@ -63,7 +63,7 @@ if __name__ == '__main__':
                     e.add(action.AddAction(config.incubator.spawn()))
                 e.world.step_number = 0
 
-    except KeyboardInterrupt:
+    except (KeyboardInterrupt, EOFError):
         LOGGER.info('Treatment loop finished through keyboard interruption.')
     e.world.deinit()
     LOGGER.info('Deinitialization of World')
