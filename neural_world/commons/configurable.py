@@ -42,12 +42,12 @@ class Configurable:
         self.__config = new_config
         # update fields
         for field in self.__config_fields:
-            self.__dict__[field] = new_config.__dict__[field]
+            setattr(self, field, getattr(new_config, field))
         # update linked Configurables
-        for field, value in self.__dict__.items():
-            if isinstance(value, Configurable):
-                if value.config is not new_config:  # change only if necessary
-                    self.__dict__[field].config = new_config
+        for attr in self.__dict__.values():
+            if isinstance(attr, Configurable):
+                if attr.config is not new_config:  # change only if necessary
+                    attr.config = new_config
 
 
 if __name__ == '__main__':
