@@ -23,19 +23,22 @@ class Engine:
             self.commands.append(command)
 
     def invoke_all(self):
+        """Call all commands on the world"""
         [c.execute(self.world) for c in self.commands]
         self.commands = []
 
     def apply(self, config):
         """Apply given config then wait for the next."""
+        self.invoke_all()  # if something added some actions after the last step
         if not config.terminated:
-            # prepare the next amount of actions
-            for coords, obj in self.world:
-                obj.update(self, self.world.neighbors(coords), coords)
-            self.add(action.RegenerateNutrientsAction())
-            self.add(action.StepComputedAction())
-            # invoke them
-            self.invoke_all()
+            for _ in range(config.steps_number):
+                # prepare the next amount of actions
+                for coords, obj in self.world:
+                    obj.update(self, self.world.neighbors(coords), coords)
+                self.add(action.RegenerateNutrientsAction())
+                self.add(action.StepComputedAction())
+                # invoke them
+                self.invoke_all()
 
     @staticmethod
     def generate_from(config, observers=[]):
