@@ -32,7 +32,7 @@ class World(observer.Observable, Configurable):
             'space_width', 'space_height',
             'nutrient_regen', 'nutrient_energy', 'nutrient_density',
             'init_indiv_density', 'init_indiv_count',
-            'incubator',
+            'incubator', 'terminated',
         ])
 
         self.space              = Space((self.space_width, self.space_height))
