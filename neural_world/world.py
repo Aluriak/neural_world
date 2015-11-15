@@ -55,10 +55,10 @@ class World(observer.Observable, Configurable):
             if random() < self.nutrient_density:
                 square.add(Nutrient())
                 self.object_counter[Nutrient] += 1
-            if self.init_indiv_density and random() < self.init_indiv_density:
+            if self.init_indiv_density > 0. and random() < self.init_indiv_density:
                 self.spawn(square)
         # Add indiv_count individuals in the world, randomly
-        if self.init_indiv_count:
+        if self.init_indiv_count > 0:
             for _ in range(self.init_indiv_count):
                 self.spawn(self.random_coords())
         # all observers can begin to work

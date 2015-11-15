@@ -23,7 +23,7 @@ INPUT_NEURON_TYPE   = NeuronType.INPUT
 OUTPUT_NEURON_COUNT = len(Direction)
 OUTPUT_NEURON_TYPE  = NeuronType.OR
 INDIVIDUAL_INITIAL_COUNT = 4
-INDIVIDUAL_INITIAL_DENSITY = None  # use count, not density
+INDIVIDUAL_INITIAL_DENSITY = -1  # use count, not density
 # Individual creation values
 NEURON_INTER_MINCOUNT = 1
 NEURON_INTER_MAXCOUNT = 20
