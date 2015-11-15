@@ -102,4 +102,4 @@ class RegenerateNutrientsAction(Action):
 class QuitAction(Action):
 
     def execute(self, world):
-        world.finished = True
+        world.config.terminated = True
