@@ -22,11 +22,17 @@ Simpler way to use Neural World currently is:
 
     make
 
-And, once you have failed to do something useful with that, you can:
+It will show a little world with some life in it, then ask you something to do through a basical prompt. (type *help* for help)
+
+Once you have failed to do something useful with that, you can:
 - see the logs, in *neural_world/logs/*, because you love the logs;
 - see the archives of your run, in *neural_world/archives/*, and look at all the graphs generated representing the neural networks in png;
 - see the ASP code, and notice the ridiculous number of LOC necessary for play with BNN;
 - look at the *neural_world/actions.py* source file. Its high-level and give a good look at the global behavior of the program;
+- look at the *neural_world/engine.py* source file, where the main loop of step is designed;
+- look at the *neural_world/__main__.py* source file, where global behavior of the program is defined (see *next steps* part);
+- create your own observer, that do lots of things;
+
 
 ### Archives
 Are Generated archives for each run performed, thanks to the *Archivist* observer of World.
@@ -56,6 +62,7 @@ This program is tested with gringo 4.5.1 and 4.5.3, and not compliant with versi
 - [ ] rewrite the main for support user configurations and embedding;
 - [ ] do something cool with the Nutrient concept (game of life populating ? Evolution capabilities ?);
 - [ ] improve genealogic tree outputs;
+- [ ] encapsulate the main current sequence inside an object that incite user to create his own sequence;
 
 
 ## Binary Neural Networks definition
