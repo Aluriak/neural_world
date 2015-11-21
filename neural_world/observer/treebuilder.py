@@ -22,7 +22,7 @@ class TreeBuilder(observer.Observer, action.ActionEmitter):
 
     def update(self, world, signals):
         if observer.Signal.NEW_INDIVIDUAL in signals:
-            new, parent = signals[observer.Signal.NEW_INDIVIDUAL]
+            new, parent, _ = signals[observer.Signal.NEW_INDIVIDUAL]
             if parent:
                 self.tree[parent.ID].append(new.ID)
 

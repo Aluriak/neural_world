@@ -54,7 +54,7 @@ class Archivist(observer.Observer, action.ActionEmitter):
         """Intercept new individuals creation for create a snapshot
         of their neural networks, in DOT format and PNG picture."""
         if self.do_graph and observer.Signal.NEW_INDIVIDUAL in signals:
-            new_indiv, parent = signals[observer.Signal.NEW_INDIVIDUAL]
+            new_indiv, parent, _ = signals[observer.Signal.NEW_INDIVIDUAL]
             gen_filename = partial(self._archive_filename, new_indiv)
             network_versions = (
                 ('dot_cln', new_indiv.network_atoms),
