@@ -44,15 +44,16 @@ class MoveAction(Action):
         self.directions = directions
 
     def execute(self, world):
-        world.remove(self.obj, self.coords)
-        final_coords = Direction.final_coords(self.coords, self.directions)
-        world.add(self.obj, final_coords)
-        # pick nutrients if possible
-        if self.obj.is_individual:
-            self.obj.energy += world.consume_nutrient(final_coords)
-            LOGGER.debug('CONSUME NUTRIENTS: ' + str(self.obj))
-        LOGGER.debug('MOVE: ' + str(self.obj) + ': ' + str(self.coords) + ' -> '
-                     + str(self.directions) + ' -> ' + str(final_coords))
+        world.move(self.obj, self.coords, self.directions)
+
+
+class PickNutrientAction(Action):
+
+    def __init__(self, indiv, coords):
+        self.indiv, self.coords = indiv, coords
+
+    def execute(self, world):
+        world.pick_nutrient(self.indiv, self.coords)
 
 
 class ReplicateAction(Action):

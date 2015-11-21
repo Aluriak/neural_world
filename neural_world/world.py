@@ -4,7 +4,7 @@ It provides an API used by the Actions subclasses.
 
 """
 import itertools
-from random import random, randrange
+import random
 from collections import defaultdict
 
 import neural_world.default as default
@@ -31,8 +31,8 @@ class World(observer.Observable, Configurable):
         Configurable.__init__(self, config=config, config_fields=[
             'space_width', 'space_height',
             'nutrient_regen', 'nutrient_energy', 'nutrient_density',
-            'init_indiv_density', 'init_indiv_count',
-            'incubator', 'terminated',
+            'init_indiv_density', 'init_indiv_count', 'neighbor_access',
+            'incubator', 'terminated'
         ])
 
         self.space              = Space((self.space_width, self.space_height))
@@ -52,11 +52,12 @@ class World(observer.Observable, Configurable):
         """
         # Populate the world according to densities
         for coords, square in self.ordered_objects:
-            if random() < self.nutrient_density:
+            if random.random() < self.nutrient_density:
                 square.add(Nutrient())
                 self.object_counter[Nutrient] += 1
-            if self.init_indiv_density > 0. and random() < self.init_indiv_density:
-                self.spawn(square)
+            if self.init_indiv_density > 0.:
+                if random.random() < self.init_indiv_density:
+                    self.spawn(square)
         # Add indiv_count individuals in the world, randomly
         if self.init_indiv_count > 0:
             for _ in range(self.init_indiv_count):
@@ -92,6 +93,22 @@ class World(observer.Observable, Configurable):
         self.object_counter[obj.__class__] += 1
         return obj
 
+    def move(self, obj, coords, directions):
+        """Move given obj placed at given coords in the given direction"""
+        new_coords = commons.Direction.final_coords(coords, directions)
+        if not self.space.occuped_at(new_coords):
+            self.remove(obj, coords)
+            self.add(obj, new_coords)
+            coords = new_coords
+            LOGGER.debug('MOVE: ' + str(obj) + ': ' + str(coords) + ' -> '
+                         + str(directions) + ' -> ' + str(new_coords))
+
+    def pick_nutrient(self, individual, coords):
+        """Give to individual the energy of a nutrient at given coords"""
+        assert individual.is_individual
+        individual.energy += self.consume_nutrient(coords)
+        LOGGER.debug('CONSUME NUTRIENTS: ' + str(individual))
+
     def spawn(self, place=None):
         """Create and place a new indiv, created from incubator."""
         # Use random coords if no coords given
@@ -102,19 +119,27 @@ class World(observer.Observable, Configurable):
         self.add(new, place)
         # Logs it and send signal to observers
         LOGGER.info('NEW INDIVIDUAL: ' + str(new) + '.')
-        self.notify_observers({observer.Signal.NEW_INDIVIDUAL: (new, None)})
+        self.notify_observers({observer.Signal.NEW_INDIVIDUAL: (new, None, place)})
 
     def spawn_from(self, indiv, coords):
-        """Create and place a new indiv, created from given one."""
+        """Create and place a new indiv, created from given one at given coords."""
         new = self.incubator.clone(indiv)
-        self.add(new, coords)
-        LOGGER.info('REPLICATE: ' + str(indiv) + ' gives ' + str(new) + '.')
-        self.notify_observers({observer.Signal.NEW_INDIVIDUAL: (new, indiv)})
+        new_coords = self.random_neighbor(coords)
+        if not self.space.occuped_at(new_coords):
+            self.add(new, new_coords)
+            LOGGER.info('REPLICATE: ' + str(indiv) + ' gives ' + str(new) +
+                        ' at coords ' + str(new_coords) + '.')
+            self.notify_observers({observer.Signal.NEW_INDIVIDUAL:
+                                   (new, indiv, new_coords)})
+
+    def random_neighbor(self, coords):
+        """Return a random coord, choosen in the neighbors of given coords"""
+        return random.choice(tuple(self.neighbor_access(coords)))
 
     def regenerate_nutrient(self):
         """Place randomly nutrient in the world"""
         for square in self.squares:
-            if random() < self.nutrient_regen:
+            if random.random() < self.nutrient_regen:
                 square.add(Nutrient())
 
     def consume_nutrient(self, coords):
@@ -140,7 +165,8 @@ class World(observer.Observable, Configurable):
         )
 
     def random_coords(self):
-        return (randrange(self.space_width), randrange(self.space_height))
+        return (random.randrange(self.space_width),
+                random.randrange(self.space_height))
 
     @property
     def have_life(self):

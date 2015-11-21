@@ -32,3 +32,6 @@ class Space(defaultdict):
     def __getitem__(self, key):
         return super().__getitem__(self.fix_key(key))
 
+    def occuped_at(self, coords):
+        """Return True iff an individual is present at given coords"""
+        return any(obj.is_individual for obj in self[coords])
