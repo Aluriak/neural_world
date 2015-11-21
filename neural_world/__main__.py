@@ -54,7 +54,7 @@ if __name__ == '__main__':
     # Main loop
     try:
         while not config.terminated:
-            prompt.input()
+            if e.world.have_life: prompt.input()
             e.apply(config)
 
             if not e.world.have_life:
