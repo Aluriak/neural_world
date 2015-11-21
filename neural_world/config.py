@@ -51,6 +51,7 @@ class Configuration:
         'nutrient_regen'   : Field(value=default.NUTRIENT_REGENERATION, type=float),
         'nutrient_energy'  : Field(value=default.NUTRIENT_ENERGY, type=int),
         'nutrient_density' : Field(value=default.NUTRIENT_INITIAL_DENSITY, type=float),
+        'waiting_time'     : Field(value=default.WAITING_TIME, type=float),
         'terminated'       : Field(value=False, type=user_compliant_bool),
     }
     GENERATED_FIELDS = {

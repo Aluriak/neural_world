@@ -2,6 +2,8 @@
 Invoker of actions, from View onto World.
 
 """
+import time
+
 import neural_world.commons as commons
 import neural_world.actions as action
 from neural_world.world import World
@@ -39,6 +41,12 @@ class Engine:
                 self.add(action.StepComputedAction())
                 # invoke them
                 self.invoke_all()
+                # finish if no more life
+                if not self.world.have_life:
+                    break
+                # wait
+                if config.waiting_time > 0.:
+                    time.sleep(config.waiting_time)
 
     @staticmethod
     def generate_from(config, observers=[]):

@@ -12,6 +12,7 @@ from neural_world.neighbors import moore
 
 # Stepping
 STEP_NUMBER_PER_RUN = 1
+WAITING_TIME = 0.1
 
 # Per simulation values
 DIR_SIMULATION_ARCHIVE = os.path.join(commons.DIR_ARCHIVES,
