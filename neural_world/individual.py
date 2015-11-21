@@ -4,11 +4,11 @@ Individual is a class that keep together id, dna and neural networks.
 """
 from itertools import islice, chain
 
+import neural_world.actions as action
 import neural_world.default as default
 import neural_world.commons as commons
 from neural_world.commons import Direction
 from neural_world.commons import NeuronType
-from neural_world.actions import MoveAction, RemoveAction, ReplicateAction
 from neural_world import neural_network
 
 
@@ -38,21 +38,29 @@ class Individual:
 
     def update(self, engine, neighbors, coords):
         """Compute the next step and send command to the given engine"""
-        # Life support
+        # Life cost
         self.energy -= 1
+        # Pick Nutrient
+        engine.add(action.PickNutrientAction(self, coords))
+        # Life support: replicate, move or die
+        if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
+            engine.add(action.ReplicateAction(self, coords))
         if self.energy > 0:
             # get states of input neurons and react to it
-            states = chain.from_iterable(
-                neural_network.square_to_input_neurons(square)
-                for square in neighbors
-            )
-            directions = neural_network.react(self, states)
-            engine.add(MoveAction(self, coords, directions))
-            # spawn another unit if possible
-            if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
-                engine.add(ReplicateAction(self, coords))
+            directions = self.reaction_to(neighbors)
+            engine.add(action.MoveAction(self, coords, directions))
         else:
-            engine.add(RemoveAction(self, coords))
+            engine.add(action.RemoveAction(self, coords))
+
+
+    def reaction_to(self, neighbors):
+        """Return a tuple of Direction instances,
+        according to the neighbors situation"""
+        states = chain.from_iterable(
+            neural_network.square_to_input_neurons(square)
+            for square in neighbors
+        )
+        return neural_network.react(self, states)
 
 
     def clonage(self, mutator=None, energy=None):
