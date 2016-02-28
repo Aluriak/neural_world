@@ -31,6 +31,8 @@ class Engine:
 
     def apply(self, config):
         """Apply given config then wait for the next."""
+        self.world.config = config
+        self.world.config.postprocess_data()
         self.invoke_all()  # if something added some actions after the last step
         if not config.terminated:
             for _ in range(config.steps_number):
