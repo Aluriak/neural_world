@@ -8,7 +8,6 @@ import neural_world.actions as action
 import neural_world.default as default
 import neural_world.commons as commons
 from neural_world.commons import Direction
-from neural_world.commons import NeuronType
 from neural_world import neural_network
 
 
@@ -16,11 +15,13 @@ LOGGER = commons.logger('life')
 
 
 class Individual:
-    next_individual_id  = 1  # useful for give to each instance a unique id
+    """
+    """
+    next_individual_id = 1  # useful for give to each instance a unique id
 
     def __init__(self, nb_intermediate_neuron, neuron_types, edges, energy):
         # Attribution of an unique ID
-        self.ID = Individual.next_individual_id
+        self.unique_id = Individual.next_individual_id
         Individual.next_individual_id += 1
         # Management of neural network data
         self.nb_intermediate_neuron = nb_intermediate_neuron
@@ -135,4 +136,4 @@ class Individual:
     def max_neuron_id(self): return self.nb_neuron
 
     def __str__(self):
-        return str(self.ID) + ': I-Neurons: ' + str(self.nb_intermediate_neuron)
+        return str(self.unique_id) + ': I-Neurons: ' + str(self.nb_intermediate_neuron)

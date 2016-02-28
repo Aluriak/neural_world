@@ -81,7 +81,7 @@ class Archivist(observer.Observer, action.ActionEmitter):
 
     def _archive_filename(self, indiv, description='data', ext='txt'):
         "Return file name for given parameters"
-        return self.template % (indiv.ID, description, ext)
+        return self.template % (indiv.unique_id, description, ext)
 
     @staticmethod
     def archive_directory(archive_directory='', simulation_id=''):

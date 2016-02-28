@@ -24,7 +24,7 @@ class TreeBuilder(observer.Observer, action.ActionEmitter):
         if observer.Signal.NEW_INDIVIDUAL in signals:
             new, parent, _ = signals[observer.Signal.NEW_INDIVIDUAL]
             if parent:
-                self.tree[parent.ID].append(new.ID)
+                self.tree[parent.unique_id].append(new.unique_id)
 
     def postprocessing(self, world):
         """Save the tree in file, and its rendering"""
