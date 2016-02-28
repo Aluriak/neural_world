@@ -47,7 +47,7 @@ class Configuration:
 
     MUTABLE_FIELDS = {
         'steps_number'     : Field(value=default.STEP_NUMBER_PER_RUN, type=int),
-        'mutation_rate'    : Field(value=default.MUTATION_RATE, type=int),
+        'mutation_rate'    : Field(value=default.MUTATION_RATE, type=float),
         'nutrient_regen'   : Field(value=default.NUTRIENT_REGENERATION, type=float),
         'nutrient_energy'  : Field(value=default.NUTRIENT_ENERGY, type=int),
         'nutrient_density' : Field(value=default.NUTRIENT_INITIAL_DENSITY, type=float),
@@ -94,6 +94,7 @@ class Configuration:
         def field_setter(instance, value, field):
             ftype = Configuration.ALL_FIELDS[field].type
             setattr(instance, '_' + field, ftype(value))
+            # regenerate generated data
         # add values as properties, eventually with a setter if field is mutable
         for varname in Configuration.ALL_FIELDS:
             new_prop = property(partial(field_access, field=varname))
