@@ -46,7 +46,7 @@ class Individual:
         # Life support: replicate, move or die
         if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
             engine.add(action.ReplicateAction(self, coords))
-        if self.energy > 0:
+        elif self.energy > 0:
             # get states of input neurons and react to it
             directions = self.reaction_to(neighbors)
             engine.add(action.MoveAction(self, coords, directions))
