@@ -139,7 +139,7 @@ class World(observer.Observable, Configurable):
     def regenerate_nutrient(self):
         """Place randomly nutrient in the world"""
         for square in self.squares:
-            if random.random() < self.nutrient_regen:
+            if random.random() <= self.nutrient_regen:
                 square.add(Nutrient())
 
     def consume_nutrient(self, coords):

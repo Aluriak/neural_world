@@ -34,9 +34,9 @@ class Mutator(Configurable):
 
         """
         MUTATION_RATE = self.mutation_rate
-        mutate_nb_neuron   = random() < MUTATION_RATE, random() < MUTATION_RATE
-        mutate_neuron_type = random() < MUTATION_RATE, random() < MUTATION_RATE
-        mutate_edges       = random() < MUTATION_RATE, random() < MUTATION_RATE
+        mutate_nb_neuron   = random() <= MUTATION_RATE, random() <= MUTATION_RATE
+        mutate_neuron_type = random() <= MUTATION_RATE, random() <= MUTATION_RATE
+        mutate_edges       = random() <= MUTATION_RATE, random() <= MUTATION_RATE
 
         if any(mutate_nb_neuron):
             add, rmv = mutate_nb_neuron
