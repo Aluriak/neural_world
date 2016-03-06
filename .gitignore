@@ -6,3 +6,4 @@ debug/
 Session.vim
 asp_py_lextab.py
 asp_py_parsetab.py
+.zcache/
