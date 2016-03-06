@@ -10,3 +10,6 @@ OPTIONS=$(LOGLEVEL) $(NOGRAPH)
 
 all:
 	$(PYTHON) -m neural_world $(OPTIONS)
+
+test:
+	$(PYTHON) -m unittest discover -v

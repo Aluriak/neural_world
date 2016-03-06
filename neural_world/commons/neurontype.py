@@ -18,6 +18,3 @@ class NeuronType(Enum):
     @staticmethod
     def xano(): return tuple(e for e in NeuronType
                              if e is not NeuronType.INPUT)
-
-assert ''.join(e.value for e in NeuronType.ixano())== NeuronType.ixano.__name__
-assert ''.join(e.value for e in NeuronType.xano()) == NeuronType.xano.__name__

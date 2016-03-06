@@ -48,29 +48,3 @@ class Configurable:
             if isinstance(attr, Configurable):
                 if attr.config is not new_config:  # change only if necessary
                     attr.config = new_config
-
-
-if __name__ == '__main__':
-    class ConfigMock:
-        def __init__(self, a=42):
-            self.a = a
-            self.b = 'hello, world'
-            self.c = False
-
-    config = ConfigMock()
-    m1 = Configurable(config, config_fields=['a', 'b'])
-    assert config.a == m1.a
-    assert config.b == m1.b
-    assert not hasattr(m1, 'c')
-
-    m2 = Configurable(config, config_fields=['b', 'c'])
-    m2.other_m = m1  # m2 know m1
-    assert not hasattr(m2, 'a')
-    assert config.b == m2.b
-    assert config.c == m2.c
-
-    # update config: field 'a' have changed
-    new_config = ConfigMock(a='is propagation working ?')
-    m2.config = new_config  # change configuration of m2 (so of m1, too)
-    assert new_config.a == m1.a  # m1 change for the new config
-    assert not hasattr(m2, 'a')  # m2 doesn't care about the changed field
