@@ -50,7 +50,7 @@ class Individual:
             # get states of input neurons and react to it
             directions = self.reaction_to(neighbors)
             engine.add(action.MoveAction(self, coords, directions))
-        else:
+        else:  # energy is lower than zero
             engine.add(action.RemoveAction(self, coords))
 
 
@@ -64,19 +64,19 @@ class Individual:
         return neural_network.react(self, states)
 
 
-    def clonage(self, mutator=None, energy=None):
+    def clonage(self, mutator=None, energy:int=None):
         """Return a new Individuals, created with the same data,
         modified by the mutator if provided.
 
-        If energy is None, half of the energy keeped by self will be given
-        to the new clone.
+        If energy is None, half of the energy of self will be given
+        to the returned clone.
 
         """
         # copy the data
         nb_intermediate_neuron = self.nb_intermediate_neuron
         neuron_types = tuple(self.neuron_types)
         edges = tuple(self.edges)
-        if energy is None:
+        if energy is None:  # split energy between the two individuals
             energy = self.energy // 2
             self.energy = int(self.energy / 2 + 0.5)
         # apply the mutator if available, and create the Individual
@@ -93,8 +93,8 @@ class Individual:
 
 
     @staticmethod
-    def build_network_atoms(individual):
-        "Build and save the atoms describing the neural network."
+    def build_network_atoms(individual) -> str:
+        """Build and return the atoms describing the neural network."""
         # generator of ids. It must be a generator, for provides only one time
         #  each neuron in multiple partial reads.
         neuron_ids = (_ for _ in range(1, individual.nb_neuron + 1))
