@@ -1,7 +1,8 @@
 """
 
 usage:
-    __main__.py [options]
+    __main__.py simulation [options]
+    __main__.py individual [options]
 
 options:
     -h, --help          print this help
@@ -27,12 +28,8 @@ from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder)
 LOGGER = commons.logger()
 
 
-if __name__ == '__main__':
-    # CLI arguments handling
-    args = docopt.docopt(__doc__, version=VERSION)
-    commons.log_level(args['--log-level'])
-    render_png = bool(int(args['--render-png']))
-
+def run_simulation(render_png):
+    """Run a simulation, with CLI and many default behaviors"""
     # Configuration
     config = Configuration()
     assert config.is_valid()
@@ -67,3 +64,22 @@ if __name__ == '__main__':
         LOGGER.info('Treatment loop finished through keyboard interruption.')
     e.world.deinit()
     LOGGER.info('Deinitialization of World')
+
+
+def run_individual():
+    """Run an individual simulation"""
+    config = Configuration()
+    assert config.is_valid()
+    raise NotImplementedError
+
+
+if __name__ == '__main__':
+    # CLI arguments handling
+    args = docopt.docopt(__doc__, version=VERSION)
+    commons.log_level(args['--log-level'])
+    render_png = bool(int(args['--render-png']))
+
+    if args['simulation']:
+        run_simulation(render_png)
+    elif args['individual']:
+        run_individual()

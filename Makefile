@@ -8,8 +8,11 @@ LOGLEVEL=--log-level=info
 OPTIONS=$(LOGLEVEL) $(NOGRAPH)
 
 
-all:
-	$(PYTHON) -m neural_world $(OPTIONS)
+sim:
+	$(PYTHON) -m neural_world simulation $(OPTIONS)
+
+indiv:
+	$(PYTHON) -m neural_world individual $(OPTIONS)
 
 test:
 	$(PYTHON) -m unittest discover -v
