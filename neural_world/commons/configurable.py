@@ -2,7 +2,11 @@
 Definition of the Configurable abstract class
 
 """
+from neural_world import commons
 from functools import partial
+
+
+LOGGER = commons.logger()
 
 
 class Configurable:
@@ -39,6 +43,7 @@ class Configurable:
 
     @config.setter
     def config(self, new_config):
+        LOGGER.debug(str(self) + ' receive ' + repr(new_config))
         self.__config = new_config
         # update fields
         for field in self.__config_fields:
@@ -47,4 +52,7 @@ class Configurable:
         for attr in self.__dict__.values():
             if isinstance(attr, Configurable):
                 if attr.config is not new_config:  # change only if necessary
+                    LOGGER.debug(str(self) + ' pass the config '
+                                 + repr(new_config) + ' to ' + str(attr)
+                                 + ' in place of ' + repr(attr.config))
                     attr.config = new_config
