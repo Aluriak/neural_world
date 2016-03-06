@@ -35,9 +35,9 @@ class World(observer.Observable, Configurable):
             'incubator', 'terminated'
         ])
 
-        self.space              = Space((self.space_width, self.space_height))
-        self.object_counter     = defaultdict(int)
-        self.step_number        = 0  # step counter ; just an information
+        self.space          = Space((self.space_width, self.space_height))
+        self.object_counter = defaultdict(int)
+        self.step_number    = 0  # step counter ; just an information
 
     def populate(self):
         """Populate the world as in initial case.
