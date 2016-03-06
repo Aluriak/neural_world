@@ -14,7 +14,7 @@ from .commons import DIR_LOGS, PACKAGE_NAME
 
 # LOGGER CONSTANTS
 LOGGER_NAME = PACKAGE_NAME
-LOG_LEVEL   = logging.DEBUG
+LOG_LEVEL   = logging.INFO
 MAIN_LOGGER = logging.getLogger(LOGGER_NAME)
 SUBLOGGER_SOLVING = 'solving'
 SUBLOGGER_LIFE    = 'life'
@@ -45,7 +45,7 @@ def log_level(level=None, name=None):
         for handler in handlers:
             handler.setLevel(level.upper())
         return level
-    else:
+    else:  # no level given, gives the current log level
         levels = Counter(h.level for h in handlers)
         return max(levels)
 
