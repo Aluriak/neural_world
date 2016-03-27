@@ -31,7 +31,7 @@ class Incubator(Configurable):
         random.neuron_id = partial(randint, 1, total_nb_neuron + 1)
         # types and edges random generation
         types = (random.choice(tuple(NeuronType.xano()))
-                 for _ in range(nb_neuron))
+                 for _ in range(nb_neuron + 4))
         edges = (
             (random.neuron_id(), random.neuron_id())
             for _ in range(randint(self.neuron_edges_mincount,
