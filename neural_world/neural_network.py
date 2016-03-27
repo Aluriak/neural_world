@@ -125,9 +125,12 @@ class NeuralNetwork:
         nb_intermediate_neuron, neuron_types = (self.nb_intermediate_neuron,
                                                 self.neuron_types)
         edges = self.edges
+        nb_neuron = self.nb_neuron
         if mutator:
-            nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
-                self.nb_intermediate_neuron, self.neuron_types, self.edges
+            (nb_intermediate_neuron, nb_neuron,
+             neuron_types, edges) = mutator.mutate(
+                self.nb_intermediate_neuron, self.nb_neuron,
+                self.neuron_types, self.edges
             )
 
         return NeuralNetwork(

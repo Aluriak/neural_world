@@ -12,6 +12,7 @@ from neural_world.commons import Direction
 from neural_world.commons import NeuronType
 from neural_world.individual import Individual
 from neural_world.commons import Configurable
+from neural_world.neural_network import NeuralNetwork
 
 
 LOGGER = commons.logger('life')
@@ -24,11 +25,13 @@ class Mutator(Configurable):
             'mutation_rate',
         ])
 
-    def mutate(self, nb_intermediate_neuron, neuron_types, edges):
+    def mutate(self, nb_intermediate_neuron:int, nb_total_neuron:int,
+               neuron_types:iter, edges:iter):
         """Return the data received in input, modified according to
         mutation settings.
 
         nb_intermediate_neuron: integer equal to number of intermediate neuron.
+        nb_total_neuron: integer equal to total number of neuron.
         neuron_types: iterable of NeuronType.
         edges: iterable of 2-tuple describing links between neurons.
 
@@ -87,8 +90,6 @@ class Mutator(Configurable):
             add, rmv = mutate_edges
             edges = list(edges)  # allow modifications
             if add:  # add one new edge
-                nb_total_neuron = Individual.neuron_total_count(
-                    nb_intermediate_neuron)
                 target1_idx = randrange(1, nb_total_neuron + 1)
                 target2_idx = randrange(1, nb_total_neuron + 1)
                 edges.append((target1_idx, target2_idx))
