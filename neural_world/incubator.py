@@ -32,12 +32,15 @@ class Incubator(Configurable):
         # get data & shortcuts
         nb_inter_neuron = randint(self.neuron_inter_mincount,
                                   self.neuron_inter_maxcount)
-        nb_neuron = self.neuron_total_count(nb_inter_neuron)
+        memory_size = randint(self.memory_min_size,
+                              self.memory_max_size)
+        nb_neuron = self.neuron_total_count(nb_inter_neuron, memory_size)
         random.neuron_id = partial(randint, 1, nb_neuron)
         # neuron types and edges random generation
         neuron_types = (
             random.choice(self.neuron_types)
-            for _ in range(self.neuron_type_total_count(nb_inter_neuron))
+            for _ in range(self.neuron_type_total_count(nb_inter_neuron,
+                                                        memory_size))
         )
         edges = (
             (random.neuron_id(), random.neuron_id())
@@ -49,11 +52,13 @@ class Incubator(Configurable):
         neural_network = NeuralNetwork(
             edges=edges,
             nb_inter_neuron=nb_inter_neuron,
+            memory_size=memory_size,
             nb_input_neuron=self.neuron_input_count,
             nb_output_neuron=self.neuron_output_count,
             neuron_types=neuron_types,
         )
 
+        # Spawn of the individual itself
         return Individual(
             neural_network=neural_network,
             energy=10,
@@ -71,19 +76,21 @@ class Incubator(Configurable):
         return indiv.clone(self.mutator, energy)
 
 
-    def neuron_total_count(self, nb_intermediate_neuron):
+    def neuron_total_count(self, nb_intermediate_neuron, memory_size):
         """Return the total number of neuron present in an individual
         with given number of intermediate neuron."""
         return sum((
             self.neuron_input_count,
             self.neuron_output_count,
+            memory_size * 2,  # input memory neurons + output memory neurons
             nb_intermediate_neuron
         ))
 
 
-    def neuron_type_total_count(self, nb_intermediate_neuron):
+    def neuron_type_total_count(self, nb_intermediate_neuron, memory_size):
         """Return the total number of needed neuron type"""
         return sum((
             self.neuron_output_count,
+            memory_size,  # only the output memory neurons needs a type
             nb_intermediate_neuron
         ))
