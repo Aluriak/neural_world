@@ -16,3 +16,8 @@ indiv:
 
 test:
 	$(PYTHON) -m unittest discover -v
+
+
+clear:
+	- rm -r */{*/,}{__pycache__,*.pyc}
+	- rm ./neural_world/logs/*.log
