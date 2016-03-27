@@ -40,3 +40,8 @@ class TerminalWorldView(observer.Observer, action.ActionEmitter):
                         line += self.graphics[Nutrient]
                 else:
                     line += ' '
+
+
+class NullTerminalWorldView(TerminalWorldView):
+    def update(self, world, signals={}):
+        pass

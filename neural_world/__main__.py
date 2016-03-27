@@ -22,7 +22,8 @@ from neural_world.info import VERSION
 from neural_world.config import Configuration
 from neural_world.engine import Engine
 from neural_world.prompt import Prompt
-from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder)
+from neural_world.observer import (Archivist, TerminalWorldView,
+                                   NullTerminalWorldView, TreeBuilder)
 
 
 LOGGER = commons.logger()
