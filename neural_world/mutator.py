@@ -102,4 +102,5 @@ class Mutator(Configurable):
                     LOGGER.info('Mutator ' + str(self) + ' lose its edge '
                                  + str(edges[idx]) + '.')
 
-        return nb_intermediate_neuron, tuple(neuron_types), tuple(edges)
+        return (nb_intermediate_neuron, nb_total_neuron,
+                tuple(neuron_types), tuple(edges))

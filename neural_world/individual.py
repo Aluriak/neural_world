@@ -62,19 +62,10 @@ class Individual:
         to the returned clone.
 
         """
-        # copy the data
-        nb_intermediate_neuron = self.neural_network.nb_intermediate_neuron
-        neuron_types = self.neural_network.neuron_types
-        edges = self.neural_network.edges
         # life support
         if energy is None:  # split energy between the two individuals
             energy = self.energy // 2
             self.energy = int(self.energy / 2 + 0.5)
-        # apply the mutator if available, and create the Individual
-        if mutator:
-            nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
-                nb_intermediate_neuron, neuron_types, edges
-            )
         # Create
         return Individual(
             self.neural_network.clone(mutator),
