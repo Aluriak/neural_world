@@ -3,30 +3,20 @@ Solving functions for neural network exploitation.
 
 """
 import os
+import random
+import itertools
 from functools   import partial
 from collections import deque
 
-import pyasp.asp as asp
-
-import neural_world.default as default
-import neural_world.atoms   as atoms
-import neural_world.commons as commons
-from .commons import DIR_ASP, Direction, SUBLOGGER_SOLVING
-
-
-# DIRECTORIES AND FILES
-FILE_ASP_RUNNING  = DIR_ASP + 'network_running.lp'
-FILE_ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
-
-# ASP SOLVING OPTIONS
-ASP_GRINGO_OPTIONS = ''  # no default options
-ASP_CLASP_OPTIONS  = ''  # options of solving heuristics
-# ASP_CLASP_OPTIONS += ' -Wno-atom-undefined'
-# ASP_CLASP_OPTIONS += ' --configuration=frumpy'
-# ASP_CLASP_OPTIONS += ' --heuristic=Vsids'
+from neural_world import default
+from neural_world import atoms
+from neural_world import commons
+from neural_world import solving
+from neural_world.commons import (FILE_ASP_RUNNING, FILE_ASP_CLEANING,
+                                  NeuronType, Direction)
 
 
-LOGGER = commons.logger(SUBLOGGER_SOLVING)
+LOGGER = commons.logger(commons.SUBLOGGER_LIFE)
 
 
 def square_to_input_neurons(square):
@@ -46,84 +36,137 @@ def square_to_input_neurons(square):
     return contains_nutrients, contains_individuals
 
 
-def react(neural_network:str, states:iter) -> tuple:
-    """Return the neural network response to given input neuron states.
+class NeuralNetwork:
+    """Encapsulation of many routines about the simple neural network string.
 
-    neural_network: atoms defining the neural network
-    states: iterable of booleans, giving the state of input neurons.
-    return: tuple of directions, result of reaction to environment.
-
-    """
-    # Atoms creation:
-    #  - define the neural network
-    #  - add an atom up/1 or down/1 foreach input neuron according to its state
-    input_atoms = neural_network + ''.join(
-        ('up' if is_up else 'down') + '(' + str(neuron) + ').'
-        # position in list gives the neuron id
-        for neuron, is_up in enumerate(states)
-    )
-    LOGGER.debug('INPUT ATOMS: "' + input_atoms + '"')
-    # ASP solver call
-    model = model_from(input_atoms, FILE_ASP_RUNNING)
-    LOGGER.debug('OUTPUT ATOMS: ' + str(model))
-    # Directions of movement extraction: get id of up-state output neurons
-    directions = (Direction[atoms.arg(atom)] for atom in model
-                  if atom.startswith('direction('))
-    return tuple(Direction.simplified(directions))
-
-
-def clean(network_atoms:str):
-    """Perform a cleaning on the neural network for remove useless neuron,
-    give an orientation to edges,...
-
-    network_atoms: string describing neural network through ASP atoms.
-    output_neurons_ids: iterable of ids of output neurons.
-    return: a new string describing neural network through ASP atoms, cleaned.
+    Each NeuralNetwork instance figure a set of atoms, and provides an API for
+    building new NeuralNetwork, reacting to neighbors states and cloning.
 
     """
-    model = model_from(network_atoms, FILE_ASP_CLEANING)
-    assert model is not None, 'cleaning network lead to non existing model'
-    return '.'.join(model) + ('.' if len(model) else '')
+    def __init__(self, nb_inter_neuron:int, edges:iter, neuron_types:iter,
+                 nb_input_neuron:int=default.INPUT_NEURON_COUNT,
+                 nb_output_neuron:int=default.OUTPUT_NEURON_COUNT):
+        # Management of neural network data
+        self.nb_intermediate_neuron = nb_inter_neuron
+        self.nb_input_neuron = nb_input_neuron
+        self.nb_output_neuron = nb_output_neuron
+        self.edges = tuple(edges)
+        self.neuron_types = tuple(neuron_types)
+        neuron_type = (_ for _ in self.neuron_types)
+        # generator of neuron id, exhausted when no remaining neurons
+        neuron_ids = (idx + 1 for idx in range(self.nb_neuron))
+        # Construction of the neural network
+        network_atoms = '.'.join(itertools.chain(
+            # input neurons
+            ('neuron(' + str(idn) + ','
+             + default.INPUT_NEURON_TYPE.value + ')'
+             for idn in itertools.islice(neuron_ids, 0, nb_input_neuron)),
+            # intermediate neurons
+            ('neuron(' + str(idn) + ',' + next(neuron_type).value + ')'
+             for idn in itertools.islice(neuron_ids, 0, nb_inter_neuron)),
+            # # output neurons: give their type and their output status.
+            ('neuron(' + str(idn) + ',' + next(neuron_type).value + ').'
+             + 'output(' + str(idn) + ',{})'  # this neuron is an output
+             for idn in neuron_ids),
+            # edges
+            ('edge(' + str(id1) + ',' + str(id2) + ')'
+             for id1, id2 in self.edges)
+        )).format(*Direction.names()) + '.'
+        if network_atoms.count('neuron') != self.nb_neuron:
+            print('self.nb_neuron:', self.nb_neuron)
+            print('count(\'neuron\'):', network_atoms.count('neuron'))
+            print('network_atoms:', network_atoms)
+            print('network_atoms cleaned:', NeuralNetwork.cleaned(network_atoms))
+            assert network_atoms.count('neuron') == self.nb_neuron
+        assert network_atoms.count('edge') == len(self.edges)
+        # Cleaning, for remove useless data
+        self.neural_network_all = network_atoms
+        self.neural_network = NeuralNetwork.cleaned(network_atoms)
+        if len(self.neural_network) > 0:
+            assert self.neural_network[-1] == '.'
 
 
-def model_from(base_atoms, aspfiles, aspargs={},
-               gringo_options='', clasp_options=''):
-    """Compute a model from ASP source code in aspfiles, with aspargs
-    given as grounding arguments and base_atoms given as input atoms.
+    @property
+    def nb_neuron(self):
+        """Return the total number of neuron"""
+        return (self.nb_intermediate_neuron
+                + self.nb_input_neuron
+                + self.nb_output_neuron)
 
-    base_atoms -- string, ASP-readable atoms
-    aspfiles -- (list of) filename, contains the ASP source code
-    aspargs -- dict of constant:value that will be set as constants in aspfiles
-    gringo_options -- string of command-line options given to gringo
-    clasp_options -- string of command-line options given to clasp
 
-    """
-    # use the right basename and use list of aspfiles in all cases
-    if isinstance(aspfiles, str):
-        aspfiles = [aspfiles]
-    elif isinstance(aspfiles, tuple):  # solver take only list, not tuples
-        aspfiles = list(aspfiles)
+    def react(self, states:iter) -> tuple:
+        """Return self response to given input neuron states.
 
-    # define the command line options for gringo and clasp
-    constants = ' -c '.join(str(k)+'='+str(v) for k,v in aspargs.items())
-    if len(aspargs) > 0:  # must begin by a -c for announce the first constant
-        constants = '-c ' + constants
-    gringo_options = ' '.join((constants, ASP_GRINGO_OPTIONS, gringo_options))
-    clasp_options += ' ' + ' '.join(ASP_CLASP_OPTIONS)
+        states: iterable of booleans, giving the state of input neurons.
+        return: tuple of directions, result of reaction to environment.
 
-    #  create solver and ground base and program in a single ground call.
-    solver = asp.Gringo4Clasp(gringo_options=gringo_options,
-                              clasp_options=clasp_options)
-    LOGGER.info('SOLVING: ' + str(aspfiles) + ' constants: ' + str(constants))
-    answers = solver.run(aspfiles, additionalProgramText=base_atoms)
+        """
+        # Atoms creation:
+        #  - define the neural network
+        #  - add an atom up/1 or down/1 foreach input neuron according to its state
+        input_atoms = self.neural_network + ''.join(
+            ('up' if is_up else 'down') + '(' + str(neuron) + ').'
+            # position in list gives the neuron id
+            for neuron, is_up in enumerate(states)
+        )
+        LOGGER.debug('INPUT ATOMS: "' + input_atoms + '"')
+        # ASP solver call
+        model = solving.model_from(input_atoms, FILE_ASP_RUNNING)
+        LOGGER.debug('OUTPUT ATOMS: ' + str(model))
+        # Directions of movement extraction: get id of up-state output neurons
+        directions = (Direction[atoms.arg(atom)] for atom in model
+                      if atom.startswith('direction('))
+        return tuple(Direction.simplified(directions))
 
-    # return the first found solution, or None if no solution
-    try:
-        first_solution = next(iter(answers))
-        LOGGER.debug('SOLVING OUTPUT: ' + str(len(first_solution))
-                     + ': ' + ' '.join(first_solution))
-        return first_solution
 
-    except StopIteration:
-        # no valid model
-        return None
+    def clone(self, mutator=None):
+        """Return a copy of self, eventually mutated by given mutator"""
+        # copy the data, mutate it if any mutator given
+        nb_intermediate_neuron, neuron_types = (self.nb_intermediate_neuron,
+                                                self.neuron_types)
+        edges = self.edges
+        if mutator:
+            nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
+                self.nb_intermediate_neuron, self.neuron_types, self.edges
+            )
+
+        return NeuralNetwork(
+            edges=edges,
+            nb_inter_neuron=nb_intermediate_neuron,
+            nb_input_neuron=self.nb_input_neuron,
+            nb_output_neuron=self.nb_output_neuron,
+            neuron_types=self.neuron_types,
+        )
+
+
+
+    @staticmethod
+    def cleaned(network_atoms:str) ->str:
+        """Return a cleaned version of given neural network to remove
+        useless neuron, give an orientation to edges,..."""
+        model = solving.model_from(network_atoms, FILE_ASP_CLEANING)
+        assert model is not None, 'cleaning network lead to non existing model'
+        return '.'.join(model) + ('.' if len(model) else '')
+
+
+    @staticmethod
+    def from_string(atoms, nb_neuron:int=None, nb_input=None, nb_output=None,
+                    neuron_types=NeuronType.ixano):
+        """Return a new NeuralNetwork instance, initialized from given
+        string of atoms.
+        Note that all the field may be badly initialized."""
+        if nb_neuron is None:
+            nb_neuron = atoms.count('neuron')
+        if nb_output is None:
+            nb_output = atoms.count('output')
+        if nb_input is None:
+            nb_input = atoms.count(',' + NeuronType.INPUT.value + ')')
+        nb_inter = nb_neuron - nb_output - nb_input
+        instance = NeuralNetwork((), nb_inter, nb_input,
+                                 nb_output, neuron_types)
+        instance.neural_network = atoms
+        return instance
+
+
+    def __str__(self):
+        return self.neural_network
