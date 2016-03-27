@@ -6,43 +6,14 @@ Unit tests for ASP solving.
 import unittest
 from collections import defaultdict
 
-from neural_world.neural_network import model_from, FILE_ASP_SOLVING
+from neural_world.tests import NeuralNetworkTester
 
 
-class SolvingTester(unittest.TestCase):
-    """Mother class of all next classes.
-
-    Defines the assert_solving function, designed as high level ASP output test.
-
-    """
-
-    def assert_solving(self, atoms, expected_result):
-        solved = self._solve(atoms)
-        expected = self._uniformized(expected_result)
-        # debug printings
-        # print('\n\tATOMS   : ' + atoms,
-              # '\n\tFOUND   : ' + solved,
-              # '\n\tEXPECTED: ' + expected,
-              # '\n\tEQUALITY: ' + str(expected == solved))
-        self.assertEqual(solved, expected)
-
-    def _solve(self, atoms):
-        """Return model found with given program and atoms, uniformized"""
-        return self._uniformized(model_from(atoms, FILE_ASP_SOLVING))
-
-    def _uniformized(self, model):
-        """Return given atoms, uniformized and then, comparable"""
-        try:
-            return '.'.join(sorted(atom for atom in model))
-        except TypeError:  # no model found
-            return ''
-
-
-class TestASPSolving(SolvingTester):
+class TestASPSolving(NeuralNetworkTester):
 
     def test_no_atoms(self):
         atoms = ''
-        expected_result = ()
+        expected_result = ''
         self.assert_solving(atoms, expected_result)
 
     def test_two_neurons_down(self):
@@ -58,7 +29,7 @@ class TestASPSolving(SolvingTester):
     def test_three_neurons_up(self):
         atoms = ('neuron(1,i). neuron(2,i). neuron(3,a). output(3,left). '
                  'up(1). up(2). edge(1,3). edge(2,3).')
-        expected_result = ('direction(left)',)
+        expected_result = 'direction(left)'
         self.assert_solving(atoms, expected_result)
 
     def test_two_paths(self):
@@ -79,16 +50,16 @@ class TestASPSolving(SolvingTester):
                  'edge(1,3). edge(1,4). edge(2,4). edge(2,5). '
                  'edge(3,6). edge(4,6). edge(4,7). edge(5,7). ')
         expected_results = {  # up states: expected result
-            ''             : ('direction(down)',),
-            'up(1).'       : ('direction(down)', 'direction(right)'),
-            'up(2).'       : (),
-            'up(1).up(2).' : ('direction(down)',),
+            ''             : 'direction(down)',
+            'up(1).'       : 'direction(down) direction(right)',
+            'up(2).'       : '',
+            'up(1).up(2).' : 'direction(down) ',
         }
         for up_states, expected_result in expected_results.items():
             self.assert_solving(atoms + up_states, expected_result)
 
 
-class TestNeuronLogicalGates(SolvingTester):
+class TestNeuronLogicalGates(NeuralNetworkTester):
     """Test all logical gates, with all possible cases of
     predecessor neurons states.
 
@@ -117,5 +88,5 @@ class TestNeuronLogicalGates(SolvingTester):
             for states, expected_result in self.cases.items():
                 self.assert_solving(
                     self.atoms.format(gate[0]) + states,
-                    ('direction(left)',) if gate in expected_result else (),
+                    'direction(left)' if gate in expected_result else '',
                 )
