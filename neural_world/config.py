@@ -63,6 +63,7 @@ class Configuration:
         'space_height'             : Field(value=default.SPACE_HEIGHT, type=int),
         'neighbor_access'          : Field(value=default.NEIGHBOR_ACCESS, type=free_type),
         'neuron_output_type'       : Field(value=default.OUTPUT_NEURON_TYPE, type=free_type),
+        'neuron_input_count'       : Field(value=default.INPUT_NEURON_COUNT, type=int),
         'neuron_output_count'      : Field(value=default.OUTPUT_NEURON_COUNT, type=int),
         'life_division_min_energy' : Field(value=default.LIFE_DIVISION_MIN_ENERGY, type=int),
         'init_indiv_count'         : Field(value=default.INDIVIDUAL_INITIAL_COUNT, type=int),
