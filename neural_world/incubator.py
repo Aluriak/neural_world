@@ -18,6 +18,7 @@ class Incubator(Configurable):
 
     def __init__(self, config):
         super().__init__(config=config, config_fields=[
+            'memory_min_count', 'memory_max_count',
             'neuron_inter_mincount', 'neuron_inter_maxcount',
             'neuron_edges_mincount', 'neuron_edges_maxcount',
             'neuron_input_count', 'neuron_output_count',
