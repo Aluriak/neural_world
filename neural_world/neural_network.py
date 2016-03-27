@@ -124,12 +124,13 @@ def model_from(base_atoms, aspfiles, aspargs={},
     LOGGER.info('SOLVING: ' + str(aspfiles) + ' constants: ' + str(constants))
     answers = solver.run(aspfiles, additionalProgramText=base_atoms)
 
-    # return the last solution (which is the best), or None if no solution
+    # return the first found solution, or None if no solution
     try:
-        last_solution = deque(answers, maxlen=1)[0]
-        LOGGER.debug('SOLVING OUTPUT: ' + str(len(last_solution))
-                     + ': ' + str(last_solution))
-        return last_solution if len(last_solution) > 0 else None
-    except IndexError:
+        first_solution = next(iter(answers))
+        LOGGER.debug('SOLVING OUTPUT: ' + str(len(first_solution))
+                     + ': ' + ' '.join(first_solution))
+        return first_solution
+
+    except StopIteration:
         # no valid model
         return None
