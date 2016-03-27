@@ -68,9 +68,11 @@ class TestNeuronLogicalGates(NeuralNetworkTester):
         """Create three input neurons, predecessors of a single neuron and all
         possible cases of input."""
         self.atoms = ('neuron(1,i). neuron(2,i). neuron(3,i).'
-                      'neuron(4,{}). output(4,left).'  # neuron 4 will be tested with all possible gates
+                      # neuron 4 will be tested with all possible gates
+                      'neuron(4,{}). output(4,left).'
                       'edge(1,4). edge(2,4). edge(3,4).')
-        self.cases = {  # {input states: {gate: activated direction expected}}
+        self.cases = {
+            # input states     : {expected gates leading to activated direction}
             ''                  : {'not'},
             'up(1).'            : {'or', 'xor'},
             'up(2).'            : {'or', 'xor'},

@@ -1,7 +1,8 @@
 import unittest
 from pyasp.asp import TermSet
 
-from neural_world.neural_network import model_from, FILE_ASP_RUNNING
+from neural_world.neural_network import FILE_ASP_RUNNING, NeuralNetwork
+from neural_world.solving import model_from
 
 
 def comparable_atoms(atoms:str) -> set:
@@ -28,9 +29,9 @@ class NeuralNetworkTester(unittest.TestCase):
         solved = comparable_atoms(solve_func(atoms))
         expected = comparable_atoms(expected_result)
         # debug printings
-        # print('\n\tATOMS   : ' + atoms,
-              # '\n\tFOUND   : ' + solved,
-              # '\n\tEXPECTED: ' + expected,
+        # print('\n\tATOMS   : ' + str(atoms),
+              # '\n\tFOUND   : ' + str(solved),
+              # '\n\tEXPECTED: ' + str(expected),
               # '\n\tEQUALITY: ' + str(expected == solved))
         self.assertEqual(solved, expected)
 
