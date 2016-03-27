@@ -15,7 +15,7 @@ from .commons import DIR_ASP, Direction, SUBLOGGER_SOLVING
 
 
 # DIRECTORIES AND FILES
-FILE_ASP_SOLVING  = DIR_ASP + 'neural_solving.lp'
+FILE_ASP_RUNNING  = DIR_ASP + 'network_running.lp'
 FILE_ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
 
 # ASP SOLVING OPTIONS
@@ -64,7 +64,7 @@ def react(individual, states:iter) -> tuple:
     )
     LOGGER.debug('INPUT ATOMS: ' + input_atoms)
     # ASP solver call
-    model = model_from(input_atoms, FILE_ASP_SOLVING)
+    model = model_from(input_atoms, FILE_ASP_RUNNING)
     LOGGER.debug('OUTPUT ATOMS: ' + str(model))
     # Directions of movement extraction: get id of up-state output neurons
     output_neurons_id = tuple(int(atoms.arg(a)) for a in model
