@@ -15,7 +15,7 @@ class Direction(IntEnum):
     This class provides a rich API for manipulate and play with directions.
 
     """
-    up, right, down, left = 0, 1, 2, 3
+    up, right, down, left = range(4)
 
     @property
     def opposite(self):
@@ -66,10 +66,3 @@ class Direction(IntEnum):
 
     def __str__(self):
         return self.name
-
-assert     Direction.up.is_opposite(Direction.down)
-assert     Direction.left.is_opposite(Direction.right)
-assert not Direction.up.is_opposite(Direction.right)
-assert     Direction.left.opposite is Direction.right
-assert     Direction.down.opposite is Direction.up
-assert not Direction.left.opposite is Direction.up
