@@ -42,6 +42,28 @@ class NeuralNetwork:
     Each NeuralNetwork instance figure a set of atoms, and provides an API for
     building new NeuralNetwork, reacting to neighbors states and cloning.
 
+    A neural network is a string, containing ASP-formatted data as atoms as:
+        - neuron(I,T): neuron of id I is of type T (T in IXANO)
+        - output(I,O): neuron of id I is an output neuron to output O (see below)
+        - edge(I,J): there is an edge between neurons of id I and J
+
+    The output types are:
+        - the directions, defined by the Direction enumeration
+        - memory indexes, in [0;memory_size[
+
+
+    About the memory:
+
+    The input memory neurons are named input because they inject
+    the memory value inside the network.
+    The output memory neurons are named output because they are output
+    of the neural running.
+
+    When the neural network is ran, memory input neurons are mapped to up
+    or down accordingly to the memory values.
+    When an output memory neuron is up after the run, the memory value at the
+    associated address is inverted (True <-> False).
+
     """
     def __init__(self, nb_inter_neuron:int, edges:iter, neuron_types:iter,
                  nb_input_neuron:int=default.INPUT_NEURON_COUNT,
