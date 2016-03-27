@@ -83,7 +83,7 @@ def clean(network_atoms:str):
     """
     model = model_from(network_atoms, FILE_ASP_CLEANING)
     assert model is not None, 'cleaning network lead to non existing model'
-    return '.'.join(model) + '.'
+    return '.'.join(model) + ('.' if len(model) else '')
 
 
 def model_from(base_atoms, aspfiles, aspargs={},
