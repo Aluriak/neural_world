@@ -98,7 +98,10 @@ class Individual:
         # generator of ids. It must be a generator, for provides only one time
         #  each neuron in multiple partial reads.
         neuron_ids = (_ for _ in range(1, individual.nb_neuron + 1))
-        return '.'.join(chain(
+        # NB: there is 16 input neurons and 4 output neurons,
+        #     so there is 20 non intermediate neurons.
+        assert individual.nb_neuron - individual.nb_intermediate_neuron == 20
+        network = '.'.join(chain(
             # input neurons
             ('neuron(' + str(idn) + ','
              + default.INPUT_NEURON_TYPE.value + ')'
@@ -110,13 +113,16 @@ class Individual:
                  individual.neuron_types
              )),
             # # output neurons: give their type and their output status.
-            ('neuron(' + str(idn) + ',' + default.OUTPUT_NEURON_TYPE.value
-             + ').output(' + str(idn) + ')'  # this neuron is an output
-             for idn in neuron_ids),  # all remaining IDs are for output neurons
+            ('neuron(' + str(idn) + ',' + neuron_type.value + ').'
+             + 'output(' + str(idn) + ',{})'  # this neuron is an output
+             for idn, neuron_type in zip(neuron_ids, individual.neuron_types)
+             ),
             # edges
             ('edge(' + str(id1) + ',' + str(id2) + ')'
              for id1, id2 in individual.edges)
         )) + '.'
+        # output neurons directions are now defined
+        return network.format(*Direction.names())
 
     @staticmethod
     def neuron_total_count(nb_intermediate_neuron):

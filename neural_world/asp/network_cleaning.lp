@@ -6,10 +6,11 @@
 % Inputs:
 %       - edge(i,j): neurons of id i is linked to neuron of id j.
 %       - neuron(i,t): neuron of id i is typed as t, with t in IXANO (see below).
-%       - output(i): neuron of id i is an output neuron.
+%       - output(i,D): neuron of id i is an output associated to direction D.
 % Outputs:
 %       - edge(i,j): neurons of id i is a predecessor of neuron of id j.
 %       - neuron(i,t): neuron of id i is typed as t, with t in IXANO (see below).
+%       - output(i,D): neuron of id i is an output associated to direction D.
 %
 % IXANO is the notation of the neuron types, which are Input, Xor, And, Not and Or.
 %  In the ASP code, these letter are in lowercase (constants).
@@ -22,21 +23,21 @@
 oedge(X,Y):- edge(X,Y) ; X<Y ; not neuron(Y,i).
 oedge(X,Y):- edge(Y,X) ; X<Y ; not neuron(Y,i).
 
-% Shortcut: a neuron is a neuron, whatever is its type.
+% Shortcut: a neuron is a neuron, whatever its type.
 neuron(X):- neuron(X,_).
+output(O):- output(O,_).  % Same for output neurons.
 
 % A neuron is connected to another neuron if an oriented path exist between them.
 connected(X,Y):- neuron(X) ; neuron(Y) ; oedge(X,Y).
 connected(X,Y):- neuron(X) ; neuron(Y) ; oedge(X,Z) ; connected(Z,Y).
 
-% A neuron is connected if connected to an output and an input neurons, or if is itself output neuron.
-connected(X):- neuron(I,i) ; connected(I,X) ; connected(X,O) ; output(O).
+% A neuron is connected to itself.
+connected(X,X):- neuron(X).
 
-% An input or output neuron is connected if there is an oriented path
-%  between it and an output or input neuron, respectively.
-connected(I;O):- neuron(I,i) ; connected(I,O) ; output(O).
+% A neuron is reachable if connected to an output and an input neurons.
+reachable(X):- neuron(I,i) ; connected(I,X) ; output(O,_) ; connected(X,O).
 
 #show.
-#show edge(X,Y): oedge(X,Y), connected(X), connected(Y).
-#show neuron(X,T): neuron(X,T), connected(X).
-#show output/1.
+#show edge(X,Y): oedge(X,Y), reachable(X), reachable(Y).
+#show neuron(X,T): neuron(X,T), reachable(X).
+#show output(X,D): output(X,D), reachable(X).
