@@ -79,7 +79,7 @@ def react(individual, states:iter) -> tuple:
     ))
 
 
-def clean(network_atoms):
+def clean(network_atoms:str):
     """Perform a cleaning on the neural network for remove useless neuron,
     give an orientation to edges,...
 
