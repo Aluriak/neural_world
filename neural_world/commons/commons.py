@@ -14,6 +14,10 @@ DIR_LOGS     = DIR_PACKAGE + 'logs/'
 DIR_ASP      = DIR_PACKAGE + 'asp/'
 DIR_ARCHIVES = DIR_PACKAGE + 'archives/'
 
+# FILES
+FILE_ASP_RUNNING  = DIR_ASP + 'network_running.lp'
+FILE_ASP_CLEANING = DIR_ASP + 'network_cleaning.lp'
+
 
 def import_classes(dirname, classes_names=None, class_check=lambda x: True):
     """
