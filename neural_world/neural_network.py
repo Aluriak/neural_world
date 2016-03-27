@@ -46,37 +46,30 @@ def square_to_input_neurons(square):
     return contains_nutrients, contains_individuals
 
 
-def react(individual, states:iter) -> tuple:
-    """Return the individual's response to given input neuron states.
+def react(neural_network:str, states:iter) -> tuple:
+    """Return the neural network response to given input neuron states.
 
-    individual: reference to an Individual instance.
+    neural_network: atoms defining the neural network
     states: iterable of booleans, giving the state of input neurons.
-    return: tuple of directions, result of reaction to environnment.
+    return: tuple of directions, result of reaction to environment.
 
     """
     # Atoms creation:
     #  - define the neural network
     #  - add an atom up/1 or down/1 foreach input neuron according to its state
-    input_atoms = individual.network_atoms + ''.join(
+    input_atoms = neural_network + ''.join(
         ('up' if is_up else 'down') + '(' + str(neuron) + ').'
         # position in list gives the neuron id
         for neuron, is_up in enumerate(states)
     )
-    LOGGER.debug('INPUT ATOMS: ' + input_atoms)
+    LOGGER.debug('INPUT ATOMS: "' + input_atoms + '"')
     # ASP solver call
     model = model_from(input_atoms, FILE_ASP_RUNNING)
     LOGGER.debug('OUTPUT ATOMS: ' + str(model))
     # Directions of movement extraction: get id of up-state output neurons
-    output_neurons_id = tuple(int(atoms.arg(a)) for a in model
-                              if a.startswith('output_up('))
-    # get the direction from the output neuron id:
-    #  as output neurons are the last four with the biggest IDs,
-    #  the maximal ID minus output neuron ID will give something
-    #  between 0 and 3: that is directly convertable in Direction.
-    return tuple(Direction.simplified(
-        Direction(individual.max_neuron_id - ido)
-        for ido in output_neurons_id
-    ))
+    directions = (Direction[atoms.arg(atom)] for atom in model
+                  if atom.startswith('direction('))
+    return tuple(Direction.simplified(directions))
 
 
 def clean(network_atoms:str):
