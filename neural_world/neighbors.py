@@ -16,10 +16,4 @@ def moore(coords):
     )
 
 def vonneumann(coords):
-    return (
-        (x+i, y+j)
-        for i, j in (( 0, -1),
-                     ( 1,  0),
-                     ( 0,  1),
-                     (-1,  0))
-    )
+    return (nei for nei in moore(coords) if 0 in nei)
