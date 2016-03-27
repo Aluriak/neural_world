@@ -54,6 +54,16 @@ class Direction(IntEnum):
             itertools.repeat(dir_left, times=abs(sum_left)),
         )
 
+    @staticmethod
+    def names():
+        """Yield names of Directions"""
+        return (e.name for e in Direction)
+
+    @staticmethod
+    def values():
+        """Yield values of Directions"""
+        return (e.value for e in Direction)
+
     def __str__(self):
         return self.name
 
@@ -63,6 +73,3 @@ assert not Direction.up.is_opposite(Direction.right)
 assert     Direction.left.opposite is Direction.right
 assert     Direction.down.opposite is Direction.up
 assert not Direction.left.opposite is Direction.up
-
-
-
