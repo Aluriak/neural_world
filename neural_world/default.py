@@ -7,7 +7,7 @@ import time
 
 import neural_world.commons as commons
 from neural_world.commons import Direction, NeuronType
-from neural_world.neighbors import moore
+from neural_world.neighbors import moore, vonneumann
 
 
 # Stepping
@@ -18,8 +18,11 @@ WAITING_TIME = 0.1
 DIR_SIMULATION_ARCHIVE = os.path.join(commons.DIR_ARCHIVES,
                                       'sim_' + str(int(time.time())))
 
+# Neighbors access
+NEIGHBOR_ACCESS = moore
+
 # Individual constants
-INPUT_NEURON_COUNT  = 16
+INPUT_NEURON_COUNT  = len(tuple(NEIGHBOR_ACCESS((0, 0)))) * 2
 INPUT_NEURON_TYPE   = NeuronType.INPUT
 OUTPUT_NEURON_COUNT = len(Direction)
 OUTPUT_NEURON_TYPE  = NeuronType.OR
@@ -40,12 +43,8 @@ NUTRIENT_REGENERATION = 0.001
 NUTRIENT_INITIAL_DENSITY = 0.6
 
 # World space constants and refs
-NEIGHBOR_ACCESS = moore
 SPACE_WIDTH = 20
 SPACE_HEIGHT = 20
-
-if NEIGHBOR_ACCESS is moore:
-    assert NEIGHBOR_ACCESS is moore and INPUT_NEURON_COUNT == 16
 
 # Evolution constants
 MUTATION_RATE = 0.01
