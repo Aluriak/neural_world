@@ -52,7 +52,7 @@ class NeuralNetwork:
         self.nb_output_neuron = nb_output_neuron
         self.edges = tuple(edges)
         self.neuron_types = tuple(neuron_types)
-        neuron_type = (_ for _ in self.neuron_types)
+        neuron_type = (_ for _ in self.neuron_types)  # generator
         # generator of neuron id, exhausted when no remaining neurons
         neuron_ids = (idx + 1 for idx in range(self.nb_neuron))
         # Construction of the neural network
@@ -72,12 +72,7 @@ class NeuralNetwork:
             ('edge(' + str(id1) + ',' + str(id2) + ')'
              for id1, id2 in self.edges)
         )).format(*Direction.names()) + '.'
-        if network_atoms.count('neuron') != self.nb_neuron:
-            print('self.nb_neuron:', self.nb_neuron)
-            print('count(\'neuron\'):', network_atoms.count('neuron'))
-            print('network_atoms:', network_atoms)
-            print('network_atoms cleaned:', NeuralNetwork.cleaned(network_atoms))
-            assert network_atoms.count('neuron') == self.nb_neuron
+        assert network_atoms.count('neuron') == self.nb_neuron
         assert network_atoms.count('edge') == len(self.edges)
         # Cleaning, for remove useless data
         self.neural_network_all = network_atoms
@@ -125,10 +120,8 @@ class NeuralNetwork:
         nb_intermediate_neuron, neuron_types = (self.nb_intermediate_neuron,
                                                 self.neuron_types)
         edges = self.edges
-        nb_neuron = self.nb_neuron
         if mutator:
-            (nb_intermediate_neuron, nb_neuron,
-             neuron_types, edges) = mutator.mutate(
+            nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
                 self.nb_intermediate_neuron, self.nb_neuron,
                 self.neuron_types, self.edges
             )
@@ -136,9 +129,9 @@ class NeuralNetwork:
         return NeuralNetwork(
             edges=edges,
             nb_inter_neuron=nb_intermediate_neuron,
+            neuron_types=neuron_types,
             nb_input_neuron=self.nb_input_neuron,
             nb_output_neuron=self.nb_output_neuron,
-            neuron_types=self.neuron_types,
         )
 
 
