@@ -37,21 +37,25 @@ class Mutator(Configurable):
 
         """
         MUTATION_RATE = self.mutation_rate
-        mutate_nb_neuron   = random() <= MUTATION_RATE, random() <= MUTATION_RATE
-        mutate_neuron_type = random() <= MUTATION_RATE, random() <= MUTATION_RATE
-        mutate_edges       = random() <= MUTATION_RATE, random() <= MUTATION_RATE
+        mutation = lambda: random() <= MUTATION_RATE
+        mutate_nb_neuron   = mutation(), mutation()
+        mutate_neuron_type = mutation(), mutation()
+        mutate_edges       = mutation(), mutation()
+        del mutation
 
         if any(mutate_nb_neuron):
             add, rmv = mutate_nb_neuron
             neuron_types = list(neuron_types)  # allow modifications
             if add:
+                nb_total_neuron += 1
                 nb_intermediate_neuron += 1
                 neuron_types.append(random_choice(NeuronType.xano()))
                 if commons.log_level() >= logging.INFO:
                     LOGGER.info('Mutator ' + str(self)
                                  + ' add new neuron of type '
                                  + neuron_types[-1].name + '.')
-            if rmv:  # delete one intermediate neuron
+            if rmv and nb_intermediate_neuron > 0:
+                nb_total_neuron -= 1
                 nb_intermediate_neuron -= 1
                 target_idx = randrange(0, len(neuron_types))
                 if commons.log_level() >= logging.INFO:
@@ -102,5 +106,6 @@ class Mutator(Configurable):
                     LOGGER.info('Mutator ' + str(self) + ' lose its edge '
                                  + str(edges[idx]) + '.')
 
-        return (nb_intermediate_neuron, nb_total_neuron,
-                tuple(neuron_types), tuple(edges))
+        neuron_types = tuple(neuron_types)
+        edges = tuple(edges)
+        return nb_intermediate_neuron, neuron_types, edges
