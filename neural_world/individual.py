@@ -15,8 +15,7 @@ LOGGER = commons.logger('life')
 
 
 class Individual:
-    """
-    """
+    """Unit of life, having a neural network and able to move in space."""
     next_individual_id = 1  # useful for give to each instance a unique id
 
     def __init__(self, neural_network:str, energy:int):
