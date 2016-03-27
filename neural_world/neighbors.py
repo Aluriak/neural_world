@@ -12,7 +12,7 @@ def moore(coords):
     return (
         (x+i, y+j)
         for i, j in itertools.product((-1, 0, 1), repeat=2)
-        if i != 0 and j != 0
+        if not (i == 0 and j == 0)
     )
 
 def vonneumann(coords):
@@ -22,5 +22,4 @@ def vonneumann(coords):
                      ( 1,  0),
                      ( 0,  1),
                      (-1,  0))
-        if i != 0 and j != 0
     )
