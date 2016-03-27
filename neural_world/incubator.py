@@ -20,9 +20,11 @@ class Incubator(Configurable):
         super().__init__(config=config, config_fields=[
             'neuron_inter_mincount', 'neuron_inter_maxcount',
             'neuron_edges_mincount', 'neuron_edges_maxcount',
+            'neuron_input_count', 'neuron_output_count',
             'mutator',
         ])
         self.neuron_types = NeuronType.ixano()
+
 
     def spawn(self):
         """Spawn Individual instances"""
@@ -34,7 +36,7 @@ class Incubator(Configurable):
         # neuron types and edges random generation
         neuron_types = (
             random.choice(self.neuron_types)
-            for _ in range(nb_neuron - default.INPUT_NEURON_COUNT)
+            for _ in range(self.neuron_type_total_count(nb_inter_neuron))
         )
         edges = (
             (random.neuron_id(), random.neuron_id())
@@ -46,8 +48,8 @@ class Incubator(Configurable):
         neural_network = NeuralNetwork(
             edges=edges,
             nb_inter_neuron=nb_inter_neuron,
-            nb_input_neuron=default.INPUT_NEURON_COUNT,
-            nb_output_neuron=default.OUTPUT_NEURON_COUNT,
+            nb_input_neuron=self.neuron_input_count,
+            nb_output_neuron=self.neuron_output_count,
             neuron_types=neuron_types,
         )
 
@@ -55,6 +57,7 @@ class Incubator(Configurable):
             neural_network=neural_network,
             energy=10,
         )
+
 
     def clone(self, indiv, energy=None):
         """Clone given individual, and apply self mutator on clone, which will
@@ -71,6 +74,15 @@ class Incubator(Configurable):
         """Return the total number of neuron present in an individual
         with given number of intermediate neuron."""
         return sum((
-            default.INPUT_NEURON_COUNT, default.OUTPUT_NEURON_COUNT,
+            self.neuron_input_count,
+            self.neuron_output_count,
+            nb_intermediate_neuron
+        ))
+
+
+    def neuron_type_total_count(self, nb_intermediate_neuron):
+        """Return the total number of needed neuron type"""
+        return sum((
+            self.neuron_output_count,
             nb_intermediate_neuron
         ))
