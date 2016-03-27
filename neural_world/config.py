@@ -53,8 +53,8 @@ class Configuration:
         'nutrient_density' : Field(value=default.NUTRIENT_INITIAL_DENSITY, type=float),
         'waiting_time'     : Field(value=default.WAITING_TIME, type=float),
         'terminated'       : Field(value=False, type=user_compliant_bool),
-        'memory_min_count' : Field(value=default.MEMORY_MIN_SIZE, type=int),
-        'memory_max_count' : Field(value=default.MEMORY_MAX_SIZE, type=int),
+        'memory_min_size'  : Field(value=default.MEMORY_MIN_SIZE, type=int),
+        'memory_max_size'  : Field(value=default.MEMORY_MAX_SIZE, type=int),
     }
     GENERATED_FIELDS = {
         'mutator'   : Field(value=None, type=free_type),
