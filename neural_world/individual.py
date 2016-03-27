@@ -33,7 +33,8 @@ class Individual:
         assert self.network_atoms_all.count('neuron') == self.nb_neuron
         # Cleaning, for remove useless data
         self.network_atoms = neural_network.clean(self.network_atoms_all)
-        assert self.network_atoms[-1] == '.'
+        if len(self.network_atoms) > 0:
+            assert self.network_atoms[-1] == '.'
         # Life support
         self.energy = energy
 
@@ -61,7 +62,7 @@ class Individual:
             neural_network.square_to_input_neurons(square)
             for square in neighbors
         )
-        return neural_network.react(self, states)
+        return neural_network.react(self.network_atoms, states)
 
 
     def clonage(self, mutator=None, energy:int=None):
