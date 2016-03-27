@@ -28,12 +28,8 @@ from neural_world.observer import (Archivist, TerminalWorldView, TreeBuilder)
 LOGGER = commons.logger()
 
 
-def run_simulation(render_png):
+def run_simulation(config, render_png):
     """Run a simulation, with CLI and many default behaviors"""
-    # Configuration
-    config = Configuration()
-    assert config.is_valid()
-
     # Observers
     v = TerminalWorldView
     a = partial(Archivist, archive_directory=config.dir_archive_simulation,
@@ -66,20 +62,25 @@ def run_simulation(render_png):
     LOGGER.info('Deinitialization of World')
 
 
-def run_individual():
+def run_individual(config):
     """Run an individual simulation"""
-    config = Configuration()
-    assert config.is_valid()
-    raise NotImplementedError
+    from neural_world.incubator import Incubator
+    individual = Incubator(config).spawn()
+    print('\n'.join(individual.prettyfied_neural_network))
 
 
 if __name__ == '__main__':
     # CLI arguments handling
     args = docopt.docopt(__doc__, version=VERSION)
-    commons.log_level(args['--log-level'])
+    commons.log_level(level=args['--log-level'])
     render_png = bool(int(args['--render-png']))
 
+    # Configuration
+    config = Configuration()
+    assert config.is_valid()
+
+    # Run
     if args['simulation']:
-        run_simulation(render_png)
+        run_simulation(config, render_png)
     elif args['individual']:
-        run_individual()
+        run_individual(config)
