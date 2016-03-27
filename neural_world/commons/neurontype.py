@@ -6,15 +6,20 @@ from enum import Enum
 
 
 class NeuronType(Enum):
-    """Type of a Neuron is in IXANO"""
-    INPUT = 'i'
-    XOR   = 'x'
-    AND   = 'a'
-    NOT   = 'n'
-    OR    = 'o'
+    """Type of a Neuron is in XANO, IXANO or IXANOJP"""
+    INPUT, XOR, AND, NOT, OR = 'ixano'
+    INPUT_MEMORY, OUTPUT_MEMORY = 'jp'
 
     @staticmethod
-    def ixano(): return tuple(e for e in NeuronType)
+    def ixanojp(): return tuple(e for e in NeuronType)
+
     @staticmethod
-    def xano(): return tuple(e for e in NeuronType
-                             if e is not NeuronType.INPUT)
+    def ixano():
+        return (NeuronType.INPUT,
+                NeuronType.XOR, NeuronType.AND,
+                NeuronType.NOT, NeuronType.OR)
+
+    @staticmethod
+    def xano():
+        return (NeuronType.XOR, NeuronType.AND,
+                NeuronType.NOT, NeuronType.OR)
