@@ -19,23 +19,12 @@ class Individual:
     """
     next_individual_id = 1  # useful for give to each instance a unique id
 
-    def __init__(self, nb_intermediate_neuron, neuron_types, edges, energy):
+    def __init__(self, neural_network:str, energy:int):
         # Attribution of an unique ID
         self.unique_id = Individual.next_individual_id
         Individual.next_individual_id += 1
-        # Management of neural network data
-        self.nb_intermediate_neuron = nb_intermediate_neuron
-        self.nb_neuron = Individual.neuron_total_count(nb_intermediate_neuron)
-        self.neuron_types = tuple(neuron_types)
-        self.edges = tuple(edges)
-        # Construction of the neural network
-        self.network_atoms_all = Individual.build_network_atoms(self)
-        assert self.network_atoms_all.count('neuron') == self.nb_neuron
-        # Cleaning, for remove useless data
-        self.network_atoms = neural_network.clean(self.network_atoms_all)
-        if len(self.network_atoms) > 0:
-            assert self.network_atoms[-1] == '.'
         # Life support
+        self.neural_network = neural_network
         self.energy = energy
 
     def update(self, engine, neighbors, coords):
@@ -62,10 +51,10 @@ class Individual:
             neural_network.square_to_input_neurons(square)
             for square in neighbors
         )
-        return neural_network.react(self.network_atoms, states)
+        return self.neural_network.react(states)
 
 
-    def clonage(self, mutator=None, energy:int=None):
+    def clone(self, mutator=None, energy:int=None):
         """Return a new Individuals, created with the same data,
         modified by the mutator if provided.
 
@@ -74,9 +63,10 @@ class Individual:
 
         """
         # copy the data
-        nb_intermediate_neuron = self.nb_intermediate_neuron
-        neuron_types = tuple(self.neuron_types)
-        edges = tuple(self.edges)
+        nb_intermediate_neuron = self.neural_network.nb_intermediate_neuron
+        neuron_types = self.neural_network.neuron_types
+        edges = self.neural_network.edges
+        # life support
         if energy is None:  # split energy between the two individuals
             energy = self.energy // 2
             self.energy = int(self.energy / 2 + 0.5)
@@ -85,54 +75,20 @@ class Individual:
             nb_intermediate_neuron, neuron_types, edges = mutator.mutate(
                 nb_intermediate_neuron, neuron_types, edges
             )
+        # Create
         return Individual(
-            nb_intermediate_neuron=nb_intermediate_neuron,
-            neuron_types=neuron_types,
-            edges=edges,
+            self.neural_network.clone(mutator),
             energy=energy,
         )
 
+    @property
+    def network_atoms(self):
+        return self.neural_network.neural_network
 
-    @staticmethod
-    def build_network_atoms(individual) -> str:
-        """Build and return the atoms describing the neural network."""
-        # generator of ids. It must be a generator, for provides only one time
-        #  each neuron in multiple partial reads.
-        neuron_ids = (_ for _ in range(1, individual.nb_neuron + 1))
-        # NB: there is 16 input neurons and 4 output neurons,
-        #     so there is 20 non intermediate neurons.
-        assert individual.nb_neuron - individual.nb_intermediate_neuron == 20
-        network = '.'.join(chain(
-            # input neurons
-            ('neuron(' + str(idn) + ','
-             + default.INPUT_NEURON_TYPE.value + ')'
-             for idn in islice(neuron_ids, 0, default.INPUT_NEURON_COUNT)),
-            # intermediate neurons
-            ('neuron(' + str(idn) + ',' + neuron_type.value + ')'
-             for idn, neuron_type in zip(
-                 islice(neuron_ids, 0, individual.nb_intermediate_neuron),
-                 individual.neuron_types
-             )),
-            # # output neurons: give their type and their output status.
-            ('neuron(' + str(idn) + ',' + neuron_type.value + ').'
-             + 'output(' + str(idn) + ',{})'  # this neuron is an output
-             for idn, neuron_type in zip(neuron_ids, individual.neuron_types)
-             ),
-            # edges
-            ('edge(' + str(id1) + ',' + str(id2) + ')'
-             for id1, id2 in individual.edges)
-        )) + '.'
-        # output neurons directions are now defined
-        return network.format(*Direction.names())
+    @property
+    def network_atoms_all(self):
+        return self.neural_network.neural_network_all
 
-    @staticmethod
-    def neuron_total_count(nb_intermediate_neuron):
-        """Return the total number of neuron present in an individual
-        with given number of intermediate neuron."""
-        return sum((
-            default.INPUT_NEURON_COUNT, default.OUTPUT_NEURON_COUNT,
-            nb_intermediate_neuron
-        ))
 
     @property
     def is_nutrient(self): return False
@@ -140,7 +96,8 @@ class Individual:
     def is_individual(self): return True
 
     @property
-    def max_neuron_id(self): return self.nb_neuron
+    def max_neuron_id(self):
+        return self.neural_network.nb_neuron
 
     def __str__(self):
-        return str(self.unique_id) + ': I-Neurons: ' + str(self.nb_intermediate_neuron)
+        return str(self.unique_id)
