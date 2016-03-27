@@ -10,7 +10,11 @@ from collections import defaultdict
 import pygraphviz as pgv
 
 from neural_world.atoms import split as atoms_split
+from neural_world import commons
 from neural_world.commons import NeuronType
+
+
+LOGGER = commons.logger()
 
 
 class GraphvizLayout(Enum):
@@ -70,11 +74,11 @@ def network_atoms_to_graphviz(network_atoms):
     edges = []  # list of 2-tuple
 
     for name, args in atoms:
-        if name == 'output' and len(args) == 1:  # output/1
-            idn, = args
+        if name == 'output' and len(args) == 2:  # output/2
+            idn, direction = args
             # If already in graph, then idn is an output
             # node already set as neuron.
-            graph[idn] += '\n(output)'
+            graph[idn] += '\n(output:' + direction + ')'
         elif name == 'neuron' and len(args) == 2:  # neuron/2
             idn, ntype = args
             graph[idn] = NeuronType(ntype).name + graph.get(idn, '')
