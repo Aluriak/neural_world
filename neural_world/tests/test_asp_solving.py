@@ -58,6 +58,13 @@ class TestASPSolving(NeuralNetworkTester):
         for up_states, expected_result in expected_results.items():
             self.assert_running(atoms + up_states, expected_result)
 
+    def test_basic_memory(self):
+        self.assert_running(
+            'up(1). neuron(1,i). edge(1,2). neuron(2,o). memwrite(2,0).',
+            'memory(0)'
+        )
+
+
 
 class TestNeuronLogicalGates(NeuralNetworkTester):
     """Test all logical gates, with all possible cases of
