@@ -71,6 +71,11 @@ class Individual:
             energy=energy,
         )
 
+
+    @property
+    def memory_size(self):
+        return self.neural_network.memory_size
+
     @property
     def network_atoms(self):
         return self.neural_network.neural_network

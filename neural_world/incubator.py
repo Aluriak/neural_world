@@ -79,18 +79,15 @@ class Incubator(Configurable):
     def neuron_total_count(self, nb_intermediate_neuron, memory_size):
         """Return the total number of neuron present in an individual
         with given number of intermediate neuron."""
-        return sum((
-            self.neuron_input_count,
-            self.neuron_output_count,
-            memory_size * 2,  # input memory neurons + output memory neurons
-            nb_intermediate_neuron
-        ))
+        return NeuralNetwork.neuron_total_count(nb_intermediate_neuron,
+                                                memory_size,
+                                                self.neuron_input_count,
+                                                self.neuron_output_count)
 
 
     def neuron_type_total_count(self, nb_intermediate_neuron, memory_size):
         """Return the total number of needed neuron type"""
-        return sum((
-            self.neuron_output_count,
-            memory_size,  # only the output memory neurons needs a type
-            nb_intermediate_neuron
-        ))
+        return NeuralNetwork.neuron_type_total_count(nb_intermediate_neuron,
+                                                memory_size,
+                                                self.neuron_input_count,
+                                                self.neuron_output_count)
