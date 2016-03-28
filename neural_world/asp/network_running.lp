@@ -8,10 +8,11 @@
 %       - neuron(i,t): neuron of id i is typed as t, with t in IXANO (see below).
 %       - output(i,D): neuron of id i is an output for direction D.
 %                      (with D in (left, right, up, down))
+%       - memwrite(i,A): neuron of id i is a memory writting neuron to address A
+%                      (with A in [0;memory size[)
 % Outputs:
-%       - up(i): i is the id of a up-state neuron.
-%       - down(i): i is the id of a down-state neuron.
 %       - direction(D): D is a direction activated by the network.
+%       - memory(i,A): i is the id of a memory neuron writing at address A.
 %
 % IXANO is the notation of the neuron types, which are Input, Xor, And, Not and Or.
 %  In the ASP code, these letter are in lowercase (constants).
@@ -49,6 +50,10 @@ up(Y):- neuron(Y,n) ; down(X) : edge(X,Y).
 % A direction is activated if the associated output neuron is activated.
 direction(D):- up(I) ; output(I,D).
 
+% A memory address is activated when the associated output neuron is activated.
+memory(A):- up(I) ; memwrite(I,A).
+
 % outputs the activated directions.
 #show.
 #show direction/1.
+#show memory/1.
