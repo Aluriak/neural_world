@@ -49,7 +49,9 @@ def model_from(base_atoms, aspfiles, aspargs={},
 
     # return the first found solution, or None if no solution
     try:
+        assert len(answers) == 1
         first_solution = next(iter(answers))
+        LOGGER.debug('SOLVING INPUT: ' + str(base_atoms))
         LOGGER.debug('SOLVING OUTPUT: ' + str(len(first_solution))
                      + ': ' + ' '.join(first_solution))
         return first_solution
