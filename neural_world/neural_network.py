@@ -66,8 +66,6 @@ class NeuralNetwork:
     associated address is inverted (True <-> False).
 
     """
-    from collections import Counter
-    DIRECTIONS_COUNTER = Counter()
 
 
     def __init__(self, nb_inter_neuron:int, edges:iter,
@@ -172,9 +170,6 @@ class NeuralNetwork:
         # Directions of movement extraction: get id of up-state output neurons
         directions = tuple(Direction[atoms.arg(atom)] for atom in model
                       if atom.startswith('direction('))
-        NeuralNetwork.DIRECTIONS_COUNTER.update(
-            {direction: 1 for direction in directions}
-        )
         return tuple(Direction.simplified(directions))
 
 
