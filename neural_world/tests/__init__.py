@@ -1,7 +1,8 @@
 import unittest
 from pyasp.asp import TermSet
 
-from neural_world.neural_network import FILE_ASP_RUNNING, NeuralNetwork
+from neural_world.neural_network import (FILE_ASP_CLEANING, FILE_ASP_RUNNING,
+                                         NeuralNetwork)
 from neural_world.solving import model_from
 
 
@@ -45,8 +46,8 @@ class NeuralNetworkTester(unittest.TestCase):
         """
         return self.__assert_solving(atoms, expected_result, self._clean)
 
-    def assert_solving(self, atoms, expected_result):
-        """Compare given atoms after solving and expected_result,
+    def assert_running(self, atoms, expected_result):
+        """Compare given atoms after network running and expected_result,
         using self.assertEqual.
 
         atoms -- TermSet or iterable of string or string of atoms sep. by space.

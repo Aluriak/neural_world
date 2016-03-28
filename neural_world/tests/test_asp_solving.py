@@ -14,23 +14,23 @@ class TestASPSolving(NeuralNetworkTester):
     def test_no_atoms(self):
         atoms = ''
         expected_result = ''
-        self.assert_solving(atoms, expected_result)
+        self.assert_running(atoms, expected_result)
 
     def test_two_neurons_down(self):
         atoms = 'neuron(1,i). neuron(2,o). output(2,up).'
         expected_result = ()
-        self.assert_solving(atoms, expected_result)
+        self.assert_running(atoms, expected_result)
 
     def test_two_neurons_up(self):
         atoms = 'neuron(1,i). neuron(2,o). output(2,up). up(1). edge(1,2).'
         expected_result = ('direction(up)',)
-        self.assert_solving(atoms, expected_result)
+        self.assert_running(atoms, expected_result)
 
     def test_three_neurons_up(self):
         atoms = ('neuron(1,i). neuron(2,i). neuron(3,a). output(3,left). '
                  'up(1). up(2). edge(1,3). edge(2,3).')
         expected_result = 'direction(left)'
-        self.assert_solving(atoms, expected_result)
+        self.assert_running(atoms, expected_result)
 
     def test_two_paths(self):
         """Test on a complex network.
@@ -56,7 +56,7 @@ class TestASPSolving(NeuralNetworkTester):
             'up(1).up(2).' : 'direction(down) ',
         }
         for up_states, expected_result in expected_results.items():
-            self.assert_solving(atoms + up_states, expected_result)
+            self.assert_running(atoms + up_states, expected_result)
 
 
 class TestNeuronLogicalGates(NeuralNetworkTester):
@@ -88,7 +88,7 @@ class TestNeuronLogicalGates(NeuralNetworkTester):
         results match with the expected ones."""
         for gate in ('and', 'or', 'xor', 'not'):
             for states, expected_result in self.cases.items():
-                self.assert_solving(
+                self.assert_running(
                     self.atoms.format(gate[0]) + states,
                     'direction(left)' if gate in expected_result else '',
                 )
