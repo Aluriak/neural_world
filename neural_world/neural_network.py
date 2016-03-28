@@ -44,7 +44,8 @@ class NeuralNetwork:
 
     A neural network is a string, containing ASP-formatted data as atoms as:
         - neuron(I,T): neuron of id I is of type T (T in IXANO)
-        - output(I,O): neuron of id I is an output neuron to output O (see below)
+        - output(I,O): neuron of id I is an output neuron to direction D
+        - memwrite(I,A): neuron of id I is a memory writing neuron at address A
         - edge(I,J): there is an edge between neurons of id I and J
 
     The output types are:
@@ -65,7 +66,12 @@ class NeuralNetwork:
     associated address is inverted (True <-> False).
 
     """
-    def __init__(self, nb_inter_neuron:int, edges:iter, neuron_types:iter,
+    from collections import Counter
+    DIRECTIONS_COUNTER = Counter()
+
+
+    def __init__(self, nb_inter_neuron:int, edges:iter,
+                 neuron_types:iter, memory_size:int,
                  nb_input_neuron:int=default.INPUT_NEURON_COUNT,
                  nb_output_neuron:int=default.OUTPUT_NEURON_COUNT):
         # Management of neural network data
@@ -74,6 +80,7 @@ class NeuralNetwork:
         self.nb_output_neuron = nb_output_neuron
         self.edges = tuple(edges)
         self.neuron_types = tuple(neuron_types)
+        self.memory = [False] * memory_size
         neuron_type = (_ for _ in self.neuron_types)  # generator
         # generator of neuron id, exhausted when no remaining neurons
         neuron_ids = (idx + 1 for idx in range(self.nb_neuron))
@@ -83,10 +90,19 @@ class NeuralNetwork:
             ('neuron(' + str(idn) + ','
              + default.INPUT_NEURON_TYPE.value + ')'
              for idn in itertools.islice(neuron_ids, 0, nb_input_neuron)),
+            # input memory neurons
+            ('neuron(' + str(idn) + ','
+             + default.INPUT_NEURON_TYPE.value + ')'
+             for idn in itertools.islice(neuron_ids, 0, memory_size)),
             # intermediate neurons
             ('neuron(' + str(idn) + ',' + next(neuron_type).value + ')'
              for idn in itertools.islice(neuron_ids, 0, nb_inter_neuron)),
-            # # output neurons: give their type and their output status.
+            # output memory neurons: give their type and their output status.
+            ('neuron(' + str(idn) + ',' + next(neuron_type).value + ').'
+             + 'memwrite(' + str(idn) + ',' + str(mem_addr) + ')'
+             for mem_addr, idn in enumerate(itertools.islice(neuron_ids,
+                                                             0, memory_size))),
+            # output neurons: give their type and their output status.
             ('neuron(' + str(idn) + ',' + next(neuron_type).value + ').'
              + 'output(' + str(idn) + ',{})'  # this neuron is an output
              for idn in neuron_ids),
@@ -96,43 +112,69 @@ class NeuralNetwork:
         )).format(*Direction.names()) + '.'
         assert network_atoms.count('neuron') == self.nb_neuron
         assert network_atoms.count('edge') == len(self.edges)
+        assert network_atoms.count('memwrite') == memory_size
+        assert 'up' in network_atoms
+        assert 'right' in network_atoms
+        assert 'down' in network_atoms
+        assert 'left' in network_atoms
         # Cleaning, for remove useless data
         self.neural_network_all = network_atoms
         self.neural_network = NeuralNetwork.cleaned(network_atoms)
         if len(self.neural_network) > 0:
             assert self.neural_network[-1] == '.'
+        LOGGER.debug('NEW NEURAL NETWORK: ' + self.neural_network_all)
+        LOGGER.debug('CLEANED: ' + self.neural_network)
 
 
     @property
     def nb_neuron(self):
         """Return the total number of neuron"""
-        return (self.nb_intermediate_neuron
-                + self.nb_input_neuron
-                + self.nb_output_neuron)
+        return NeuralNetwork.neuron_total_count(self.nb_intermediate_neuron,
+                                                self.memory_size,
+                                                self.nb_input_neuron,
+                                                self.nb_output_neuron)
+
+    @property
+    def memory_size(self):
+        return len(self.memory)
 
 
     def react(self, states:iter) -> tuple:
         """Return self response to given input neuron states.
 
         states: iterable of booleans, giving the state of input neurons.
-        return: tuple of directions, result of reaction to environment.
+        return: (tuple of directions, result of reaction to environment,
+                 new memory state)
 
         """
         # Atoms creation:
         #  - define the neural network
         #  - add an atom up/1 or down/1 foreach input neuron according to its state
         input_atoms = self.neural_network + ''.join(
-            ('up' if is_up else 'down') + '(' + str(neuron) + ').'
+            'up(' + str(idn) + ').'
             # position in list gives the neuron id
-            for neuron, is_up in enumerate(states)
+            for idn, is_up in enumerate(states)
+            if is_up
+        ) + ''.join(  # add the memory atoms
+            'up(' + str(idn) + ').'
+            for idn, is_up in enumerate(self.memory, start=self.nb_input_neuron)
+            if is_up
         )
         LOGGER.debug('INPUT ATOMS: "' + input_atoms + '"')
         # ASP solver call
         model = solving.model_from(input_atoms, FILE_ASP_RUNNING)
         LOGGER.debug('OUTPUT ATOMS: ' + str(model))
+        # Memory rewritting: swap value if output neuron is up
+        written_memory = (int(atoms.arg(atom)) for atom in model
+                          if atom.startswith('memory('))
+        for mem_addr in written_memory:
+            self.memory[mem_addr] = not self.memory[mem_addr]
         # Directions of movement extraction: get id of up-state output neurons
-        directions = (Direction[atoms.arg(atom)] for atom in model
+        directions = tuple(Direction[atoms.arg(atom)] for atom in model
                       if atom.startswith('direction('))
+        NeuralNetwork.DIRECTIONS_COUNTER.update(
+            {direction: 1 for direction in directions}
+        )
         return tuple(Direction.simplified(directions))
 
 
@@ -150,6 +192,7 @@ class NeuralNetwork:
 
         return NeuralNetwork(
             edges=edges,
+            memory_size=self.memory_size,
             nb_inter_neuron=nb_intermediate_neuron,
             neuron_types=neuron_types,
             nb_input_neuron=self.nb_input_neuron,
@@ -157,6 +200,25 @@ class NeuralNetwork:
         )
 
 
+    @staticmethod
+    def neuron_total_count(nb_inter, memory_size, nb_input, nb_output):
+        """Return the total number of neuron present in an individual"""
+        return sum((
+            nb_input,
+            nb_output,
+            memory_size * 2,  # input memory neurons + output memory neurons
+            nb_inter
+        ))
+
+
+    @staticmethod
+    def neuron_type_total_count(nb_inter, memory_size, nb_input, nb_output):
+        """Return the total number of needed neuron type"""
+        return sum((
+            nb_output,
+            memory_size,  # only the output memory neurons needs a type
+            nb_inter
+        ))
 
     @staticmethod
     def cleaned(network_atoms:str) ->str:
