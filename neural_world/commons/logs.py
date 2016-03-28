@@ -14,7 +14,7 @@ from .commons import DIR_LOGS, PACKAGE_NAME
 
 # LOGGER CONSTANTS
 LOGGER_NAME = PACKAGE_NAME
-LOG_LEVEL   = logging.INFO
+LOG_LEVEL   = logging.DEBUG
 MAIN_LOGGER = logging.getLogger(LOGGER_NAME)
 SUBLOGGER_SOLVING = 'solving'
 SUBLOGGER_LIFE    = 'life'
