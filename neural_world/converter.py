@@ -85,10 +85,13 @@ def network_atoms_to_graphviz(network_atoms):
         elif name == 'edge' and len(args) == 2:  # edge/2
             ida, idb = args
             edges.append((ida, idb))
+        elif name == 'memwrite' and len(args) == 2:  # memwrite/2
+            pass
         else:
             # some received atoms are not handled…
             # see logs for details
-            LOGGER.error('UNHANDLED ATOMS: ' + str((name, args)) + '.')
+            LOGGER.error('converter.network_atoms_to_graphviz:'
+                         ' UNHANDLED ATOMS: ' + str((name, args)) + '.')
 
     # Create and return the dot from graph and edges
     dot = pgv.AGraph(strict=False, directed=True)
