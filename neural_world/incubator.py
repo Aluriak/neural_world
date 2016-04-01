@@ -14,7 +14,13 @@ from neural_world.neural_network import NeuralNetwork
 
 
 class Incubator(Configurable):
-    """Spawn Individual instances"""
+    """Spawn Individual instances.
+
+    A simple way to create a new Incubator behavior is to subclass Incubator,
+    and redefine the following methods: memory_size,
+    nb_inter_neuron, nb_edges, random_neuron_id.
+
+    """
 
     def __init__(self, config):
         super().__init__(config=config, config_fields=[
@@ -27,25 +33,44 @@ class Incubator(Configurable):
         self.neuron_types = NeuronType.ixano()
 
 
+    def memory_size(self):
+        """Return the memory size"""
+        return randint(self.memory_min_size, self.memory_max_size)
+
+    def nb_inter_neuron(self):
+        """Return number of intermediate neuron"""
+        return randint(self.neuron_inter_mincount, self.neuron_inter_maxcount)
+
+    def nb_edges(self):
+        """Return number of edges"""
+        return randint(self.neuron_edges_mincount, self.neuron_edges_maxcount)
+
+    def random_neuron_id(self, bigger_id):
+        """Return a factory of random neuron id, that should be in [1;bigger_id]"""
+        return partial(randint, 1, bigger_id)
+
+    def random_neuron_type(self):
+        """Return a factory of random neuron types"""
+        return partial(random.choice, self.neuron_types)
+
+
     def spawn(self):
         """Spawn Individual instances"""
         # get data & shortcuts
-        nb_inter_neuron = randint(self.neuron_inter_mincount,
-                                  self.neuron_inter_maxcount)
-        memory_size = randint(self.memory_min_size,
-                              self.memory_max_size)
+        nb_inter_neuron = self.nb_inter_neuron()
+        memory_size = self.memory_size()
         nb_neuron = self.neuron_total_count(nb_inter_neuron, memory_size)
-        random.neuron_id = partial(randint, 1, nb_neuron)
+        random.neuron_id = self.random_neuron_id(nb_neuron)
+        random.neuron_type = self.random_neuron_type()
         # neuron types and edges random generation
         neuron_types = (
-            random.choice(self.neuron_types)
+            random.neuron_type()
             for _ in range(self.neuron_type_total_count(nb_inter_neuron,
                                                         memory_size))
         )
         edges = (
             (random.neuron_id(), random.neuron_id())
-            for _ in range(randint(self.neuron_edges_mincount,
-                                   self.neuron_edges_maxcount))
+            for _ in range(self.nb_edges())
         )
 
         # Construction of the neural network
