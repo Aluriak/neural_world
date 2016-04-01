@@ -30,7 +30,7 @@ class Incubator(Configurable):
             'neuron_input_count', 'neuron_output_count',
             'mutator',
         ])
-        self.neuron_types = NeuronType.ixano()
+        self.neuron_types = NeuronType.xano()
 
 
     def memory_size(self):
