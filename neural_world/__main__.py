@@ -67,6 +67,7 @@ def run_individual(config):
     """Run an individual simulation"""
     from neural_world.incubator import Incubator
     individual = Incubator(config).spawn()
+    print(individual.network_dict)
     print('\n'.join(individual.prettyfied_neural_network))
 
 
