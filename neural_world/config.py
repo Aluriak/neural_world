@@ -32,9 +32,9 @@ class Configuration:
     """Contains data about a simulation.
 
     All data in configuration are one in:
-        mutable: these values can change between two steps.
-        unmutable: these values can't change without probable problems.
-        generated: these values are deduced from the rest of the data.
+        mutable: value can change between two steps.
+        unmutable: value can't change without probable problems.
+        generated: value are deduced from mutable and unmutable data.
 
     Change data, even mutable, while running a step is probably a bad idea.
 
@@ -96,6 +96,12 @@ class Configuration:
             return getattr(instance, '_' + field)
         def field_setter(instance, value, field):
             ftype = Configuration.ALL_FIELDS[field].type
+            if field in self.UNMUTABLE_FIELDS:
+                LOGGER.warning('CONFIG: The unmutable field ' + field
+                               + ' have been modified to ' + str(value))
+            elif field in self.GENERATED_FIELDS:
+                LOGGER.warning('CONFIG: The generated field ' + field
+                               + ' have been modified to ' + str(value))
             setattr(instance, '_' + field, ftype(value))
             # regenerate generated data
         # add values as properties, eventually with a setter if field is mutable
