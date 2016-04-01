@@ -3,6 +3,9 @@ Individual is a class that keep together id, dna and neural networks.
 
 """
 from itertools import islice, chain
+from collections import defaultdict
+
+import tergraw
 
 import neural_world.actions as action
 import neural_world.default as default
@@ -84,6 +87,47 @@ class Individual:
     def network_atoms_all(self):
         return self.neural_network.neural_network_all
 
+    @property
+    def prettyfied_neural_network(self):
+        """Yield the lines of a terminal view of neural network"""
+        if self.network_dict:
+            yield from tergraw.pretty_view(self.network_dict, oriented=True)
+        else:
+            yield ''  # nothing to print
+
+    @property
+    def network_dict(self):
+        if not hasattr(self, '_network_dict'):
+            graph, neuron, output = defaultdict(set), {}, {}
+            for atom in self.network_atoms.split('.'):
+                if not atom: continue
+                predicate, args = atom.split('(')
+                args = args.rstrip(')').split(',')
+                if predicate == 'edge':
+                    node, succ = args
+                    graph[node].add(succ)
+                if predicate == 'neuron':
+                    idx, type = args
+                    neuron[idx] = type
+                if predicate == 'output':
+                    idx, direction = args
+                    output[idx] = direction
+                if predicate == 'memwrite':
+                    idx, regaddr = args
+                    output[idx] = regaddr
+
+            # graph enrichment
+            node_name = {
+                node: (node + ('-' + neuron[node] if neuron.get(node) else '')
+                            + ('-' + output[node] if output.get(node) else ''))
+                for node in chain(graph.keys(), *graph.values())
+            }
+            self._network_dict = {
+                node_name[node]: set(node_name[succ] for succ in succs)
+                for node, succs in graph.items()
+            }
+
+        return self._network_dict
 
     @property
     def is_nutrient(self): return False
