@@ -2,11 +2,11 @@
 Definition of the Configurable abstract class
 
 """
-from neural_world import commons
+from . import logger
 from functools import partial
 
 
-LOGGER = commons.logger()
+LOGGER = logger()
 
 
 class Configurable:

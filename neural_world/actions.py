@@ -6,7 +6,7 @@ Define also the ActionEmitter base class, which is mostly designed
  for simplifications of Action emission.
 
 """
-import neural_world.commons as commons
+from neural_world import commons
 from neural_world.commons import Direction
 
 
