@@ -54,6 +54,9 @@ class NeuralNetwork(NeuralNetworkEngine):
     associated address is inverted (True <-> False).
 
     """
+    from collections import Counter
+    DIRECTIONS = Counter()
+    MEMORIES = Counter()
     MINIMAL_NEURON_ID = MINIMAL_NEURON_ID
 
     def __init__(self, nb_inter_neuron:int, memory_size:int,
@@ -76,6 +79,7 @@ class NeuralNetwork(NeuralNetworkEngine):
 
     def directions(self, states, kwargs):
         directions = tuple(d for s, d in zip(states, Direction) if s)
+        NeuralNetwork.DIRECTIONS.update(directions)
         yield actions.MoveAction(kwargs['individual'], kwargs['coords'], directions)
 
 
@@ -92,6 +96,7 @@ class NeuralNetwork(NeuralNetworkEngine):
         # New memory   :    0 1 1 0
         # Consequence: (memory xor states) -> new memory
         self.memory = [v != s for s, v in zip(states, self.memory)]
+        NeuralNetwork.MEMORIES.update(i for i, s in enumerate(states) if s)
         yield
 
 

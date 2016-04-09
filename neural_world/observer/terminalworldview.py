@@ -6,6 +6,7 @@ import neural_world.commons as commons
 import neural_world.actions as action
 from neural_world.individual import Individual
 from neural_world.nutrient import Nutrient
+from neural_world.neural_network import NeuralNetwork
 from . import observer
 
 
@@ -25,7 +26,10 @@ class TerminalWorldView(observer.Observer, action.ActionEmitter):
         """Print World in the terminal"""
         if len(signals) == 0 or observer.Signal.NEW_STEP in signals:
             print('\nstep:', world.step_number,
-                  '\tindividuals:', world.object_counter[Individual])
+                  '\tindividuals:', world.object_counter[Individual],
+                  '\tmemories:', len(NeuralNetwork.MEMORIES), NeuralNetwork.MEMORIES,
+                  '\ndirections:', NeuralNetwork.DIRECTIONS,
+                 )
             x_prev, line = 0, ''
             for coords, objects in world.ordered_objects:
                 x, y = coords
