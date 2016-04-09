@@ -35,10 +35,8 @@ class Individual:
         self.energy -= 1
         # Pick Nutrient
         engine.add(actions.PickNutrientAction(self, coords))
-        # Life support: replicate, move or die
-        if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
-            engine.add(actions.ReplicateAction(self, coords))
-        elif self.energy > 0:
+        # Life support
+        if self.energy > 0:
             # get states of input neurons and react to it
             for action in self.reaction_to(neighbors, individual=self, coords=coords):
                 if action:
@@ -48,13 +46,9 @@ class Individual:
 
 
     def reaction_to(self, neighbors, **kwargs):
-        """Return a tuple of Direction instances,
-        according to the neighbors situation"""
-        states = chain.from_iterable(
-            neural_network.square_to_input_neurons(square)
-            for square in neighbors
-        )
-        return self.neural_network.react(neighbors=states, **kwargs)
+        """Yield actions instances, according to the neighbors and kwargs"""
+        actions = self.neural_network.react(neighbors=neighbors, **kwargs)
+        yield from (action for action in actions if action is not None)
 
 
     def clone(self, mutator=None, energy:int=None):
