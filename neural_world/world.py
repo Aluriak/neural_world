@@ -50,6 +50,7 @@ class World(observer.Observable, Configurable):
         interest some of them.
 
         """
+        self.notify_observers()  # all observers can begin to work
         # Populate the world according to densities
         for coords, square in self.ordered_objects:
             if random.random() < self.nutrient_density:
@@ -62,8 +63,6 @@ class World(observer.Observable, Configurable):
         if self.init_indiv_count > 0:
             for _ in range(self.init_indiv_count):
                 self.spawn(self.random_coords())
-        # all observers can begin to work
-        self.notify_observers()
 
 
     def remove(self, obj, place):
