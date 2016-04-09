@@ -28,10 +28,6 @@ oedge(X,Y):- edge(Y,X) ; X<Y ; not neuron(X,i).
 % Shortcut: a neuron is a neuron, whatever its type.
 neuron(X):- neuron(X,_).
 
-% Are marked as output any output or writting memory neuron
-output(O):- output(O,_).  % Same for output neurons.
-output(M):- memwrite(M,_).  % Same for writting memory neurons.
-
 % A neuron is connected to another neuron if an oriented path exist between them.
 connected(X,Y):- neuron(X) ; neuron(Y) ; oedge(X,Y).
 connected(X,Y):- neuron(X) ; neuron(Y) ; oedge(X,Z) ; connected(Z,Y).
@@ -45,5 +41,4 @@ reachable(X):- neuron(I,i) ; connected(I,X) ; output(O) ; connected(X,O).
 #show.
 #show edge(X,Y): oedge(X,Y), reachable(X), reachable(Y).
 #show neuron(X,T): neuron(X,T), reachable(X).
-#show output(X,D): output(X,D), reachable(X).
-#show memwrite(X,A): memwrite(X,A), reachable(X).
+#show output(X): output(X), reachable(X).

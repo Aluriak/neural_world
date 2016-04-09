@@ -74,19 +74,16 @@ def network_atoms_to_graphviz(network_atoms):
     edges = []  # list of 2-tuple
 
     for name, args in atoms:
-        if name == 'output' and len(args) == 2:  # output/2
-            idn, direction = args
+        if name == 'output' and len(args) == 1:  # output/1
             # If already in graph, then idn is an output
             # node already set as neuron.
-            graph[idn] += '\n(output:' + direction + ')'
+            graph[args] += '\n(output)'
         elif name == 'neuron' and len(args) == 2:  # neuron/2
             idn, ntype = args
             graph[idn] = NeuronType(ntype).name + graph.get(idn, '')
         elif name == 'edge' and len(args) == 2:  # edge/2
             ida, idb = args
             edges.append((ida, idb))
-        elif name == 'memwrite' and len(args) == 2:  # memwrite/2
-            pass
         else:
             # some received atoms are not handled…
             # see logs for details
