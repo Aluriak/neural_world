@@ -22,10 +22,10 @@ DIR_SIMULATION_ARCHIVE = os.path.join(commons.DIR_ARCHIVES,
 NEIGHBOR_ACCESS = moore
 
 # Individual constants
+NEIGHBOR_COUNT = len(tuple(NEIGHBOR_ACCESS((0, 0))))
+UNIT_TYPE_COUNT = len(('Individual', 'Nutrient'))
 MEMORY_MIN_SIZE, MEMORY_MAX_SIZE = 1, 8
-INPUT_NEURON_COUNT  = len(tuple(NEIGHBOR_ACCESS((0, 0)))) * 2
 INPUT_NEURON_TYPE   = NeuronType.INPUT
-OUTPUT_NEURON_COUNT = len(Direction)
 OUTPUT_NEURON_TYPE  = NeuronType.OR
 INDIVIDUAL_INITIAL_COUNT = 4
 INDIVIDUAL_INITIAL_DENSITY = -1  # use count, not density
