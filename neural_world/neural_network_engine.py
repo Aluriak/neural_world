@@ -87,7 +87,7 @@ class NeuralNetworkEngine:
 
     def input_states(self, kwargs):
         for input_func, nb_neuron in self.inputs:
-            states = input_func(kwargs)
+            states = input_func(**kwargs)
             assert len(states) == nb_neuron
             yield from states
 
@@ -100,7 +100,7 @@ class NeuralNetworkEngine:
         output_states = iter(output_states)
         for output_func, values in self.outputs:
             yield from output_func(tuple(itertools.islice(output_states, 0, values)),
-                                   kwargs)
+                                   **kwargs)
 
 
     def output_from(self, input_states:iter) -> tuple:
