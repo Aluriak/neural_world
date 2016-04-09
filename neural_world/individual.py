@@ -7,9 +7,9 @@ from collections import defaultdict
 
 import tergraw
 
-import neural_world.actions as action
-import neural_world.default as default
-import neural_world.commons as commons
+from neural_world import actions
+from neural_world import default
+from neural_world import commons
 from neural_world.commons import Direction
 from neural_world import neural_network
 
@@ -34,26 +34,27 @@ class Individual:
         # Life cost
         self.energy -= 1
         # Pick Nutrient
-        engine.add(action.PickNutrientAction(self, coords))
+        engine.add(actions.PickNutrientAction(self, coords))
         # Life support: replicate, move or die
         if self.energy >= default.LIFE_DIVISION_MIN_ENERGY:
-            engine.add(action.ReplicateAction(self, coords))
+            engine.add(actions.ReplicateAction(self, coords))
         elif self.energy > 0:
             # get states of input neurons and react to it
-            directions = self.reaction_to(neighbors)
-            engine.add(action.MoveAction(self, coords, directions))
+            for action in self.reaction_to(neighbors, individual=self, coords=coords):
+                if action:
+                    engine.add(action)
         else:  # energy is lower than zero
-            engine.add(action.RemoveAction(self, coords))
+            engine.add(actions.RemoveAction(self, coords))
 
 
-    def reaction_to(self, neighbors):
+    def reaction_to(self, neighbors, **kwargs):
         """Return a tuple of Direction instances,
         according to the neighbors situation"""
         states = chain.from_iterable(
             neural_network.square_to_input_neurons(square)
             for square in neighbors
         )
-        return self.neural_network.react(states)
+        return self.neural_network.react(neighbors=states, **kwargs)
 
 
     def clone(self, mutator=None, energy:int=None):
@@ -98,7 +99,7 @@ class Individual:
     @property
     def network_dict(self):
         if not hasattr(self, '_network_dict'):
-            graph, neuron, output = defaultdict(set), {}, {}
+            graph, neuron, output = defaultdict(set), {}, set()
             for atom in self.network_atoms.split('.'):
                 if not atom: continue
                 predicate, args = atom.split('(')
@@ -110,8 +111,7 @@ class Individual:
                     idx, type = args
                     neuron[idx] = type
                 if predicate == 'output':
-                    idx, direction = args
-                    output[idx] = direction
+                    output.add(args[0])
                 if predicate == 'memwrite':
                     idx, regaddr = args
                     output[idx] = regaddr
@@ -119,7 +119,7 @@ class Individual:
             # graph enrichment
             node_name = {
                 node: (node + ('-' + neuron[node] if neuron.get(node) else '')
-                            + ('-' + output[node] if output.get(node) else ''))
+                            + ('-out' if node in output else ''))
                 for node in chain(graph.keys(), *graph.values())
             }
             self._network_dict = {
