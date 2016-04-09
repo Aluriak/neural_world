@@ -28,7 +28,8 @@ Once you have failed to do something useful with that, you can:
 - look at the *neural_world/actions.py* source file. Its high-level and give a good look to the global program actions;
 - look at the *neural_world/engine.py* source file, where the main loop of step is designed;
 - look at the *neural_world/__main__.py* source file, where global behavior of the program is defined (see *next steps* part);
-- look at the *neural_world/neural_network.py* source file, where all the logic about BNN is implemented;
+- look at the *neural_world/neural_network.py* source file, where all the neurons logic, in term of simulation, is implemented;
+- look at the *neural_world/neural_network_engine.py* source file, where all the core logic about BNN is implemented;
 - create your own observer, that do lots of things (opengl representation, real-time statistical analysis,…);
 
 
@@ -55,15 +56,22 @@ First, some Python modules need to be installed, including [docopt](http://docop
 ### Simulation
 - [X] basic unit tests about the solving, the logic part and some details;
 - [X] memory implementation (each individual have its own memory, and can play with it);
+- [X] refactorize neural network, encapsulate properly the input/output logic;
+- [X] input neurons: neighbors, memory, energy level;
+- [ ] input neurons: communication;
+- [X] output neurons: movement, replication, memory;
+- [ ] output neurons: sexual reproduction (need ACCC usage);
+- [ ] neural networks can be mutated during live, through mutagen spreading;
+- [ ] space: gradients of nutrient regen, mutagen agent;
+- [ ] some places in the space could kill/damage individuals, except if individual is in a particular mode (given by an output neuron);
 - [ ] basic unit tests about the Individual class;
-- [ ] implement communication between individuals (input neuron take its value from output neuron of neighbor individual);
-- [ ] turn binary neural network in discrete neural network (use of integer instead of True/False);
 - [ ] use [ACCC](https://github.com/Aluriak/ACCC) for create neural networks and perform the mutations;
-- [ ] add some basical command line arguments: (automatically creat neural network rendering, for example);
+- [ ] CLI: automatically creat neural network rendering;
+- [ ] more iterative boot sequence: new individuals spawns on a regular basis instead of fixed number when no remaining individiual;
 - [ ] rewrite the main for support user configurations and embedding;
 - [ ] do something cool with the Nutrient concept (game of life populating ? Evolution capabilities ?);
-- [ ] improve genealogic tree outputs;
-- [ ] encapsulate the main current sequence inside an object that incite user to create his own sequence;
+- [ ] improve genealogic tree outputs: print a real phylogenetic tree;
+
 
 ### Individual Simulation
 - [ ] basical prompt for modifying parameters and BNN;
@@ -74,16 +82,13 @@ First, some Python modules need to be installed, including [docopt](http://docop
 
 ## Binary Neural Networks definition
 Binary neural networks have three group of neurons:
-- input neurons, two per neighbor square in the simulated world, giving informations about presence and absence of elements.
-- output neurons, four, one for each possible direction of propagation.
+- input neurons, two per neighbor square in the simulated world, one for each memory address,….
+- output neurons, four, one for each expected output value (movement, memory,…).
 - intermediate neurons, variable in number and type, can be considered as logical gates (XOR, AND, NOT, OR).
-- memory neurons, dissociated in reading (input) and writing (output) neurons, allowing the neural network to use its memory.
 
 Moreover, there is edges between neurons that perform the signal linking.
 
-When an output neuron is in up state, the associated direction will be used for determine how the individual will move.
-When a writing memory neuron is up state, the associated address in memory will be swaped. (True become False, vice-versa)
-Reading memory neurons are each associated to an address in memory, and equal to the value found at this address.
+When an output neuron is in up state, the associated direction will be used for determine how the individual will behave (memory change, moving,…).
 
 
 The network resolution is performed through [Answer Set Programming](https://en.wikipedia.org/wiki/Answer_set_programming)
@@ -94,7 +99,8 @@ Note that the network is never stocked by Python in other way than strings conta
 
 ## Architecture
 - Individual: life unit, that have a NeuralNetwork and energy.
-- NeuralNetwork: definition of BNN, with all the associated primitives.
+- NeuralNetworkEngine: definition of BNN, with all the associated primitives.
+- NeuralNetwork: usage of BNN, with all the input/output behavior.
 - Direction: enumeration highly giving the four directions in a 2D world.
 - NeuronType: enumeration of the 5 types of neurons, which are Input, Xor, And, Not and Or, abbreviated IXANO.
 - Incubator: factory of individuals.
