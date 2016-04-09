@@ -75,17 +75,22 @@ class RemoveAction(Action):
         world.remove(self.obj, self.coords)
 
 
-class AddAction(Action):
+class SpawnAction(Action):
 
-    def __init__(self, obj, coords=None):
-        self.obj = obj
+    def __init__(self, coords=None):
         self.coords = coords
 
     def execute(self, world):
-        if self.coords is None:
-            world.add(self.obj, world.random_coords())
-        else:
-            world.add(self.obj, self.coords)
+        world.spawn(self.coords)
+
+
+class AddAction(Action):
+
+    def __init__(self, obj, coords=None):
+        self.obj, self.coords = obj, coords
+
+    def execute(self, world):
+        world.add(self.obj, self.coords if self.coords else world.random_coords())
 
 
 class StepComputedAction(Action):

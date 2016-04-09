@@ -54,7 +54,7 @@ def run_simulation(config, render_png):
             if not e.world.have_life:
                 # try again, life !
                 for _ in range(config.init_indiv_count):
-                    e.add(action.AddAction(config.incubator.spawn()))
+                    e.add(action.SpawnAction())
                 e.world.step_number = 0
 
     except (KeyboardInterrupt, EOFError):
