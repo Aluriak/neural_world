@@ -23,7 +23,7 @@ class Observer:
         pass
 
     def update(self, observable, signals):
-        """Print World in the terminal"""
+        """Do something, according to received signals"""
         pass
 
     def postprocessing(self, world):
