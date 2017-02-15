@@ -40,6 +40,7 @@ def run_simulation(config, render_png):
 
     # Engine from rules
     e = Engine.generate_from(config, observers=(v, a, t))
+    e.world.init_observers()
 
     # Initialize the world
     e.world.populate()

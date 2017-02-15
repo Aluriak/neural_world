@@ -50,7 +50,6 @@ class World(observer.Observable, Configurable):
         interest some of them.
 
         """
-        self.notify_observers()  # all observers can begin to work
         # Populate the world according to densities
         for coords, square in self.ordered_objects:
             if random.random() < self.nutrient_density:
